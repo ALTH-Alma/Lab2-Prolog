@@ -12,14 +12,14 @@
 
 %Capa constructor:
 fecha(D,M,A,F):- 
-number(D), number(M), number(A),
+integer(D), integer(M), integer(A),
 D > 0, D < 32, M > 0, M < 13,
 F=[D,M,A].
 
 
 %Capa pertenencia:
 esFecha([D,M,A]):- 
-number(D), number(M), number(A),
+integer(D), integer(M), integer(A),
 D > 0, D < 32, M > 0, M < 13.
 
 %Capa selector:
@@ -37,12 +37,12 @@ getAno([D,M,A],A):- esFecha([D,M,A]).
 %recompensaVacia= ["",0];
 
 recompensa(O,MR,R):- 
-string(O), number(MR), 
+string(O), integer(MR), 
 R= [O,MR].
 
 %Capa pertenencia:
 esRecompensa([O,MT]):-
-string(O), number(MT), 
+string(O), integer(MT), 
 MT>0; ([O,MT]==["",0]).
 
 %Capa selector:
@@ -56,12 +56,12 @@ getMontoRecompensa([O,MT],MT):- esRecompensa([O,MT]).
 %Representación: usuario[string nombre, string contraseña, entero reputación, lista de string referencias].
 
 %Capa constructor: 
-%Entrada: un string NU (nombre del usuario), un string CU (contraseña del usuario), un número mayor que 0 (reputación del usuario),
+%Entrada: un string NU (nombre del usuario), un string CU (contraseña del usuario), un entero mayor que 0 (reputación del usuario),
 %una lista de strings LR (lista de referencias del usuario) y una variable para asignar al usuario.
 %Salida: un Usuario (lista de elementos) si las entradas son validas y un false sino.
 
 usuario(NU,CU,RU,LR, USUARIO):-
-string(NU), string(CU), number(RU), esListaString(LR),
+string(NU), string(CU), integer(RU), esListaString(LR),
 RU > -1,
 USUARIO= [NU,CU,RU,LR].
 
@@ -75,7 +75,7 @@ USUARIO= [NU,CU,RU,LR].
 %Salida: un booleano, un trus si la lista es un usuario y un false sino.
 
 esUsuario([NU,CU,RU,LR]):-
-string(NU), string(CU), number(RU), esListaString(LR),
+string(NU), string(CU), integer(RU), esListaString(LR),
 RU > -1 .
 
 %Capa selector:
@@ -87,7 +87,7 @@ getNameUser([NU,CU,RU,LR],NU):- esUsuario([NU,CU,RU,LR]).
 %Entrada: un string, contraseña del usuario.
 getPassUser([NU,CU,RU,LR],CU):- esUsuario([NU,CU,RU,LR]).
 
-%Salida: un número mayor que 0, puntos de reputación del usuario.
+%Salida: un entero mayor que 0, puntos de reputación del usuario.
 getReputUser([NU,CU,RU,LR],RU):- esUsuario([NU,CU,RU,LR]).
 
 %Salida: una lista de strings, una lista de las referencias del usuario.
@@ -116,30 +116,31 @@ agregarUsuario(T, [NU,CU,RU,LR], NEWT).
 %Ejemplo: [["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]]].
 
 %Capa selector: entrega a un usuario en una lista de usuarios al idendificarlo por su nombre.
-getUsuario([], NOMBRE, H).
 
-getUsuario([H|T], NOMBRE,  NOM):- 
-getNameUser(H,NU), NU==NOMBRE, NOM=H, !, getUsuario(T,NOMBRE, H).
+getUsuario([H|_], NOMBRE, U):- 
+getNameUser(H,NU), NU == NOMBRE, U= H.
 
-%getUsuario([H|T], NOMBRE, H):-
-%getUsuario(T, NOMBRE, H).
+getUsuario([_|T], NOMBRE, U):-
+getUsuario(T, NOMBRE, U).
+
 
 
 %_________________________________________
 
 %TDA respuesta: representa una respuesta y sus elementos obligatorios.
-%Representación: respuesta[entero id respuesta, string autor, fecha fecha de publicación, string contenido respuesta, lista etiquetas, string estado (Aceptada/Rechazada), entero votos a favor,
-%enteros votos en contra, entero reportes].
+%Representación: respuesta[entero id respuesta, string autor, fecha fecha de publicación, string contenido respuesta, lista etiquetas,
+% string estado [Aceptada/Rechazada], entero votos a favor, entero votos en contra, entero reportes].
 
 %Capa constructor:
-%Entrada: entero ID (identificador pregunta), string AR (autor de la respuesta), fecha FP (fecha de publicación), string C (contenido), lista de strings LE (lista de etiquetas),
-%string EA (estado de aceptacion), entero VF (votos a favor), entero VC (votos en contra), entero NR (número de reportes) y una variable RESPUESTA para asignar la respuesta contruida.
-%Salida: un Respuesta (lista de elementos) si las entradas son correctas y un false sino.
+%Entrada: entero IDR (identificador respuesta), string AR (autor de la respuesta), fecha FP (fecha de publicación), string C (contenido), 
+%lista de strings LE (lista de etiquetas), string EA (estado de aceptacion), entero VF (votos a favor), entero VC (votos en contra), 
+%entero NR (entero de reportes) y una variable RESPUESTA para asignar la respuesta contruida.
+Salida: un Respuesta (lista de elementos) si las entradas son correctas y un false sino.
 
-respuesta(ID, AR, FP, C, LE, EA, VF, VC, NR, RESPUESTA):-
-number(ID), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), number(VF), number(VC), number(NR), 
-ID > -1, VF > -1, VC > -1, NR > -1,
-RESPUESTA=[ID, AR, FP, C, LE, EA, VF, VC, NR, RESPUESTA].
+respuesta(IDR, AR, FP, C, LE, EA, VF, VC, NR, RESPUESTA):-
+integer(IDR), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), integer(VF), integer(VC), integer(NR), 
+IDR > -1, VF > -1, VC > -1, NR > -1,
+RESPUESTA=[IDR, AR, FP, C, LE, EA, VF, VC, NR, RESPUESTA].
 
 %Ejemplo R1= [0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0].
 
@@ -147,43 +148,107 @@ RESPUESTA=[ID, AR, FP, C, LE, EA, VF, VC, NR, RESPUESTA].
 %Entrada: una lista de elementos que sirve como postulante a ser una respuesta.
 %Salida: un booleano, un true si la lista es una respuesta y un false sino.
 
-esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]):-
-number(ID), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), number(VF), number(VC), number(NR).
+esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]):-
+integer(IDR), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), integer(VF), integer(VC), integer(NR),
+IDR > -1, VF > -1, VC > -1, NR > -1 .
 
 %Capa selector:
 %Entrada: todas los predicados de la capa selector reciben una respuesta y una variable para guardar el dato buscado.
 
-%Salida: un número, ID de la respuesta.
-getIDRes([ID, AR, FP, C, LE, EA, VF, VC, NR],ID):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+%Salida: un entero, ID de la respuesta.
+getIDRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],IDR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %Salida: un string, nombre del autor de la respuesta.
-getAutorRes([ID, AR, FP, C, LE, EA, VF, VC, NR],AR):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+getAutorRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],AR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %Salida: una fecha, fecha de publicación de la respuesta.
-getFechaRes([ID, AR, FP, C, LE, EA, VF, VC, NR],FP):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+getFechaRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],FP):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %Salida: un string, contenido de la respuesta.
-getContenidoRes([ID, AR, FP, C, LE, EA, VF, VC, NR],C):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+getContenidoRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],C):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %Salida: un lista de strings, lista de etiquetas de la respuesta.
-getListaDeEtiquetasRes([ID, AR, FP, C, LE, EA, VF, VC, NR],LE):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+getListaDeEtiquetasRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],LE):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %Salida: un string, estado de aceptación de la respuesta.
-getEstadoRes([ID, AR, FP, C, LE, EA, VF, VC, NR],EA):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+getEstadoRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],EA):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
-%Salida: un número, votos a favor de la respuesta.
-getVotosAFavorRes([ID, AR, FP, C, LE, EA, VF, VC, NR],VF):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+%Salida: un entero, votos a favor de la respuesta.
+getVotosAFavorRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],VF):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
-%Salida: un número, votos en contra de la respuesta.
-getVotosEnContraRes([ID, AR, FP, C, LE, EA, VF, VC, NR],VC):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+%Salida: un entero, votos en contra de la respuesta.
+getVotosEnContraRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],VC):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
-%Salida: un número, reportes de la respuesta.
-getReportesRes([ID, AR, FP, C, LE, EA, VF, VC, NR],NR):- esRespuesta([ID, AR, FP, C, LE, EA, VF, VC, NR]).
+%Salida: un entero, reportes de la respuesta.
+getReportesRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],NR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 
 %_________________________________________
 
 %TDA pregunta: representa una preguntas y sus lementos obligatorios.
-%Representación: pregunta[]
+%Representación: pregunta[entero id pregunta, string nombre del autor, fecha fecha de publicación, string contenido, lista de strings etiquetas,
+%string estado pregunta [Abierta/Cerrada], entero número de visualizaciones, entero votos a favor, entero votos en contra, recompensa Recompensa,
+% entero reportes, lista de respuestas respuestas].
+
+%Capa constructor:
+%Entrada: un entero ID (identificador de pregunta), un string AP (nombre del autor de la pregunta), una fecha FP (fecha de publicación de la pregunta), 
+%un string C (contenido pregunta), una lista de strins LE (listas de etiquetas), un string EP (estado de la pregunta), un entero NV (número de visualizaciones),
+%un entero VF (votos a favor), un entero VC (votos en contra), una recompensa REC (recompensa con ofertor y monto), una lista de respuestas RESPUESTAS 
+%(repuestas de la pregunta), una variable PREGUNTA para asignar la pregunta construida. 
+%Salida: una Pregunta (lista de elementos) si las entradas son correctas y un false sino. 
+
+pregunta(IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS,PREGUNTA):-
+integer(IDP),string(AP),esFecha(FP),string(C),esListaString(LE),string(EP),integer(NV),integer(VF),integer(VC),esRecompensa(REC),integer(NR),
+IDP > -1, NV > -1, VF > -1, VC > -1, NR > -1,
+PREGUNTA= [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS].
+
+%Ejemplo R1= [0, "Maria", [29, 2, 2020], "¿Por qué es considerado una mala práctica utilizar variables globales?,¿Realmente son perjudiciales?", ["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, [0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]].
+
+%Capa pertenencia:
+%Entrada: una lista de elementos que sirve como postulante a ser una pregunta.
+%Salida: un booleano, un true si la lista es una pregunta y un false sino.
+
+esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]):-
+integer(IDP),string(AP),esFecha(FP),string(C),esListaString(LE),string(EP),integer(NV),integer(VF),integer(VC),esRecompensa(REC),integer(NR),
+IDP > -1, NV > -1, VF > -1, VC > -1, NR > -1 .
+
+%Capa selector:
+%Entrada: todos los predicados de la capa selector reciben como entrada una pregunta.
+
+%Salida: un entero, ID de la pregunta.
+getIdPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],IDP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un string, nombre del autor de la pregunta.
+getAutorPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],AP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: una fecha, fecha de publicación de la pregunta.
+getIdFechaPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],FP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un string, contenido de la pregunta.
+getContenidoPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],C):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: una lista de strings, lista de etiquetas de la pregunta.
+getEtiquetasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],LE):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un string, estado de la pregunta.
+getEstadoPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],EP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un entero, número de visualizaciones de la pregunta.
+getVisualizaciones([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],NV):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un entero, votos a favor de la pregunta.
+getVotosAFavorPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],VF):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un entero, votos en contra de la pregunta.
+getVotosEnContraPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],VC):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: una recompensa, recompensa ofrecida por la pregunta.
+getRecompensaPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],REC):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: un entero, número de reportes de la pregunta.
+getReportesPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],NR):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
+
+%Salida: una lista de respuestas, respuestas de la pregunta.
+getRespuestasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],RESPUESTAS):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
 
 
