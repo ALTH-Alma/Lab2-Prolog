@@ -381,6 +381,23 @@ getCorrelativoPreg([UA, LU, LP, CP, CR],CP):- esStack([UA, LU, LP, CP, CR]).
 %Salida: un entero, correlativo de respuestas en el stack.
 getCorrelativoRes([UA, LU, LP, CP, CR],CR):- esStack([UA, LU, LP, CP, CR]).
 
+%Capa modificador:
+
+actualizarStackRegister([UA, LU, LP, CP, CR], NEWLU, [UA, NEWLU, LP, CP, CR]):- esListaUsuarios(NEWLU).
+
+actualizarStackLogin([UA, LU, LP, CP, CR], REGISTRADO, [REGISTRADO, LU, LP, CP, CR]):- esUsuario(REGISTRADO).
+
+actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, CR]):- esListaPreguntas(NEWLP).
+
+%predicados extras:
+noExisteUsuarioEnStack([UA, LU, LP, CP, CR],USERNAME):- (not(existeUsuario(LU,USERNAME))).
+
+autentificarUsuarioEnStack([UA, LU, LP, CP, CR],USERNAME,PASS,U):-
+existeUsuario(LU,USERNAME), 
+getUsuario(LU,USERNAME,USER), getPassUser(USER,P), 
+P == PASS, U= USER.
+
+
 %_________________________________________
 %Desarrollo requerimiento 2: Hechos.
 
@@ -388,6 +405,27 @@ usuario(["Maria", "Maria1999", 50, ["Racket","c#"]]).
 usuario(["Ana","A1234", 70, ["java","python"]]).
 usuario(["Juan","juan2000", 20, ["python","c++"]]).
 usuario(["Pedro", "P340", 90,  ["python","c++"]]).
+
+pregunta([0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
+			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
+ 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
+ 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1]
+ 			]]).
+
+pregunta([1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
+			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
+			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
+ 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]).
+
+stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
+			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
+			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
+ 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
+			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
+			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
+			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
+ 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
+ 			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"]).
 
 stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]]], 
 			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
@@ -397,35 +435,52 @@ stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
  			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]] ], 
- 			10, 12]).
-
-stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
-			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]] ], 
- 			10, 12]).
+ 			10, 12],"Ana","A1234",S).
 
 
 
 
 
 
-%Desarrollo función register:
+%Desarrollo predicado register:
 
-register(SK,NEWUSERNAME, PASS, SKS):-
-esStack(SK),string(NEWUSERNAME),string(PASS),string(PASS),
-getListaUsuarios(SK,LU),(not(existeUsuario(LU,NEWUSERNAME))),
-crearUsuario(NEWUSERNAME,PASS,0,[],NEWUSER),agregarUsuario(LU,NEWUSER,NLU),
-getActivo(SK,UA),
-getListaPreguntas(SK,LP),
-getCorrelativoPreg(SK,CP),
-getCorrelativoRes(SK,CR),
-crearStack(UA, NLU, LP, CP, CR, NSK),
-(not(SKS == NSK)), !, var(SKS), SKS= NKS.
+registerInter(SK,NEWUSERNAME, PASS, SKS):-
+esStack(SK),string(NEWUSERNAME),string(PASS),
+noExisteUsuarioEnStack(SK,NEWUSERNAME),
+crearUsuario(NEWUSERNAME,PASS,0,[],NEWUSER), getListaUsuarios(SK,LU), agregarUsuario(LU,NEWUSER,NLU),
+actualizarStackRegister(SK,NLU,NSK),
+SKS=NSK.
+
+register(SKI, NAME, P, SKF):-
+var(SKF), registerInter(SKI, NAME, P, SF), SKF=SF.
+
+register(SKI, NAME, P, SKF):-
+registerInter(SKI, NAME, P, S), S==SKF.
 
 
-esIgual(A,B):- (A == B), !, var(B), B=A. 
+%Desarroloo predicado login:
+
+login(SK, USERNAME, PASS, SKF):-
+esStack(SK),string(USERNAME),string(PASS),
+autentificarUsuarioEnStack(SK,USERNAME,PASS,USER),
+actualizarStackLogin(SK,USER,S),
+SKF= S.
+
+
+%Desarrollo predicado ask:
+
+askInter(SK, FP, CP, LE, SKF):-
+esStack(SK),esFecha(FP),string(CP),esListaString(LE),
+getActivo(SK,USER),getNameUser(USER,NAME),
+getCorrelativoPreg(SK,CNP), NEWCP is CNP + 1,
+crearPregunta(CNP,NAME,FP,CP,LE,"Abierta",0,0,0,["",0],0,[],NEWP), getListaPreguntas(SK,LP), agregarPregunta(LP,NEWP,NLP),
+actualizarStackAsk(SK,NLP,NEWCP,SKS),
+SKF= SKS.
+
+ask(SKI, FECHA, CONTENIDO, ETIQUETAS, SKF):-
+var(SKF), askInter(SKI, FECHA, CONTENIDO, ETIQUETAS, SF), SKF=SF.
+
+ask(SKI, FECHA, CONTENIDO, ETIQUETAS, SKF):-
+askInter(SKI, FECHA, CONTENIDO, ETIQUETAS, S), S==SKF.
+
+%Desarrollo predicado answer.
