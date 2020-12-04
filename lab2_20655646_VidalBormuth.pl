@@ -124,18 +124,21 @@ agregarUsuario(T, [NU,CU,RU,LR], NEWT).
 %Capa selector: entrega a un usuario en una lista de usuarios al idendificarlo por su nombre.
 %Entrada: una lista de usuarios, un string NOMBRE (nombre del usuario que se desea obtener) y una variable U para asignar al usuario.
 %Salida: un usuario.
-getUsuario([H|_], NOMBRE, U):- 
+getUsuario([[]|_], NOMBRE, U):- 
 getNameUser(H,NU), NU == NOMBRE, U= H.
 
 getUsuario([_|T], NOMBRE, U):-
 getUsuario(T, NOMBRE, U).
 
-%Función extra: verifica si existe un usuario en la lista de usuarios.
-existeUsuario([H|_], NOMBRE):- 
-getNameUser(H,NU), NU == NOMBRE, !.
 
-existeUsuario([_|T], NOMBRE):-
-existeUsuario(T, NOMBRE).
+
+
+
+
+%Función extra: verifica si existe un usuario en la lista de usuarios.
+existeUsuario([[NOMBRE,_,_,_]|_], NOMBRE):- !.
+existeUsuario([_|Usuarios], NOMBRE):-
+existeUsuario(Usuarios, NOMBRE).
 
 
 %_________________________________________
@@ -338,6 +341,13 @@ getPregunta([_|T], IDP, P):-
 getPregunta(T, IDP, P).
 
 
+%predicado para saber si existe una pregunta:
+
+existePregunta([H|_], ID):- 
+getIdPreg(H,IDP), IDP == ID, !.
+
+existePregunta([_|T], ID):-
+existePregunta(T, ID).
  %_________________________________________
 
 %TDA stack: representa a Stack Overflow.
@@ -390,13 +400,26 @@ actualizarStackLogin([UA, LU, LP, CP, CR], REGISTRADO, [REGISTRADO, LU, LP, CP, 
 actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, CR]):- esListaPreguntas(NEWLP).
 
 %predicados extras:
-noExisteUsuarioEnStack([UA, LU, LP, CP, CR],USERNAME):- (not(existeUsuario(LU,USERNAME))).
 
-autentificarUsuarioEnStack([UA, LU, LP, CP, CR],USERNAME,PASS,U):-
-existeUsuario(LU,USERNAME), 
-getUsuario(LU,USERNAME,USER), getPassUser(USER,P), 
-P == PASS, U= USER.
+agregarUsuarioStack([UA, [], LP, CP, CR], [NomUser,PassUser,RepUser,ListRef], [UA, [NomUser,PassUser,RepUser,ListRef], LP, CP, CR]):- esUsuario([NomUser,PassUser,RepUser,ListRef]).
+agregarUsuarioStack([UA, [Usuario|Usuarios], LP, CP, CR], [NewNameUser, NewPassUser, NewRepUser, NewListRef], [UA, [[[NewNameUser, NewPassUser, NewRepUser, NewListRef],Usuario]|Usuarios], LP, CP, CR]):- 
+esUsuario([NewNameUser, NewPassUser, NewRepUser, NewListRef]), not(existeUsuario([Usuario|Usuarios],NewNameUser)).
 
+
+%autentificarUsuarioEnStack([_,ListUser,_,_,_], UserName, Pass, [,ListUser,_,_,_]):-
+%existeUsuario(ListUser,UserName), 
+%getUsuario(LU,USERNAME,USER), getPassUser(USER,P), 
+%P == PASS, U= USER.
+
+
+
+autentificarUser([[NOMBRE,PASS,RepUser,ListRef]|_], NOMBRE, PASS, [NOMBRE,PASS,RepUser,ListRef]):- !.
+autentificarUser([_|Usuarios], NOMBRE, PASS, User):-
+autentificarUser(Usuarios, NOMBRE, PASS, User).
+
+
+existePreguntaEnStack([UA, LU, LP, CP, CR],IDP):-
+existePregunta(LP,IDP).
 
 %_________________________________________
 %Desarrollo requerimiento 2: Hechos.
@@ -442,32 +465,28 @@ stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 
 
 
-%Desarrollo predicado register:
+%3Desarrollo predicado register:
 
-registerInter(SK,NEWUSERNAME, PASS, SKS):-
-esStack(SK),string(NEWUSERNAME),string(PASS),
-noExisteUsuarioEnStack(SK,NEWUSERNAME),
-crearUsuario(NEWUSERNAME,PASS,0,[],NEWUSER), getListaUsuarios(SK,LU), agregarUsuario(LU,NEWUSER,NLU),
-actualizarStackRegister(SK,NLU,NSK),
-SKS=NSK.
-
-register(SKI, NAME, P, SKF):-
-var(SKF), registerInter(SKI, NAME, P, SF), SKF=SF.
-
-register(SKI, NAME, P, SKF):-
-registerInter(SKI, NAME, P, S), S==SKF.
+register(Stack, NewUserName, PassUser, Stack2):-
+esStack(Stack),string(NewUserName),string(PassUser),
+agregarUsuarioStack(Stack,[NewUserName, PassUser, 0, []], StackFinal),
+Stack2 = StackFinal.
 
 
-%Desarroloo predicado login:
+
+
+%4Desarroloo predicado login:
 
 login(SK, USERNAME, PASS, SKF):-
 esStack(SK),string(USERNAME),string(PASS),
-autentificarUsuarioEnStack(SK,USERNAME,PASS,USER),
+autentificarUser(SK,USERNAME,PASS,USER),
 actualizarStackLogin(SK,USER,S),
 SKF= S.
 
 
-%Desarrollo predicado ask:
+%5Desarrollo predicado ask:
+
+
 
 askInter(SK, FP, CP, LE, SKF):-
 esStack(SK),esFecha(FP),string(CP),esListaString(LE),
@@ -475,12 +494,20 @@ getActivo(SK,USER),getNameUser(USER,NAME),
 getCorrelativoPreg(SK,CNP), NEWCP is CNP + 1,
 crearPregunta(CNP,NAME,FP,CP,LE,"Abierta",0,0,0,["",0],0,[],NEWP), getListaPreguntas(SK,LP), agregarPregunta(LP,NEWP,NLP),
 actualizarStackAsk(SK,NLP,NEWCP,SKS),
-SKF= SKS.
+SKF = SKS.
 
-ask(SKI, FECHA, CONTENIDO, ETIQUETAS, SKF):-
-var(SKF), askInter(SKI, FECHA, CONTENIDO, ETIQUETAS, SF), SKF=SF.
 
-ask(SKI, FECHA, CONTENIDO, ETIQUETAS, SKF):-
-askInter(SKI, FECHA, CONTENIDO, ETIQUETAS, S), S==SKF.
 
-%Desarrollo predicado answer.
+
+
+
+%7Desarrollo predicado answer.
+%answer(SKI, Fecha, IDP, Contenido, LE):-
+%esStack(SKI), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(LE),
+%getActivo(SK,USER),getNameUser(USER,NAME), %en caso de no haber usuario activo retorna false.
+%existePreguntaEnStack(SKI,IDP),
+
+
+
+igual(P,V):- P =.. Lista, V=Lista.
+
