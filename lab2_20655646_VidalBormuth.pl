@@ -342,12 +342,23 @@ getPregunta(T, IDP, P).
 
 
 %predicado para saber si existe una pregunta:
+%Utiliza el operador de corte para confirmar la existencia de una pregunta según su id en la lista de preguntas.
+existePregunta([[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]|_], IDP):- !.
+existePregunta([_|Preguntas], ID):-
+existePregunta(Preguntas, ID).
 
-existePregunta([H|_], ID):- 
-getIdPreg(H,IDP), IDP == ID, !.
 
-existePregunta([_|T], ID):-
-existePregunta(T, ID).
+
+%Recibe una lista de preguntas.
+agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer]]|Preguntas]):-
+esRespuesta(NewAnswer).
+
+agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[Respuesta|Respuestas]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer,Respuesta|Respuestas]]|Preguntas]):-
+esRespuesta(NewAnswer).
+
+agregarResPreg([Pregunta|Preguntas], IDPreg, NewAnswer, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewAnswer, NewPreguntas).
+
+
  %_________________________________________
 
 %TDA stack: representa a Stack Overflow.
@@ -399,21 +410,19 @@ actualizarStackLogin([UA, LU, LP, CP, CR], REGISTRADO, [REGISTRADO, LU, LP, CP, 
 
 actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, CR]):- esListaPreguntas(NEWLP).
 
+
 %predicados extras:
 
-agregarUserStack([UA, [], LP, CP, CR], [NomUser, Pass, Reput, ListRef], [UA, [[NomUser, Pass, Reput, ListRef]], LP, CP, CR]):- esUsuario([NomUser,Pass,Reput, ListRef]).
-
+agregarUserStack([UA, [], LP, CP, CR], NewUser, [UA, [NewUser], LP, CP, CR]):- esUsuario(NewUser).
 agregarUserStack([UA, [Usuario|Usuarios], LP, CP, CR], [NewNameUser, NewPass, NewReput, NewListRef], [UA, [[NewNameUser, NewPass, NewReput, NewListRef],Usuario|Usuarios], LP, CP, CR]):- 
 esUsuario([NewNameUser, NewPass, NewReput, NewListRef]), not(existeUsuario([Usuario|Usuarios], NewNameUser)).
 
 
-agregarAskStack([UA, LU, [], CP, CR], [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], NewCorrPreg, [[], LU, [[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]], NewCorrPreg, CR]):- 
-esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]).
-agregarAskStack([UA, LU, [Pregunta|Preguntas], CP, CR], [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], NewCorrPreg, [[], LU, [[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], Pregunta|Preguntas], NewCorrPreg, CR]):- 
-esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]).
 
-
-
+agregarAskStack([UA, LU, [], CP, CR], NewAsk, NewCorrPreg, [[], LU, [NewAsk], NewCorrPreg, CR]):- 
+esPregunta(NewAsk).
+agregarAskStack([UA, LU, [Pregunta|Preguntas], CP, CR], NewAsk, NewCorrPreg, [[], LU, [NewAsk, Pregunta|Preguntas], NewCorrPreg, CR]):- 
+esPregunta(NewAsk).
 
 
 autentificarUser([[NOMBRE,PASS,RepUser,ListRef]|_], NOMBRE, PASS, [NOMBRE,PASS,RepUser,ListRef]):- !.
@@ -421,8 +430,6 @@ autentificarUser([_|Usuarios], NOMBRE, PASS, User):-
 autentificarUser(Usuarios, NOMBRE, PASS, User).
 
 
-existePreguntaEnStack([UA, LU, LP, CP, CR],IDP):-
-existePregunta(LP,IDP).
 
 %agregarPreguntaStack([UA, LU, [], CP, CR], [NomUser,Pass,Reput,ListRef], [UA, [NomUser,Pass,Reput,ListRef], LP, CP, CR]):- esUsuario([NomUser,Pass,Rep,ListRef]).
 
@@ -447,8 +454,10 @@ pregunta([1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gus
 
 preguntas([[1, "Ana", [29, 10, 2020], " ¿Conocen alguna manera de jahsjh?", ["python","interfaz-gráfica"], "Abierta", 20, 5, 2,["",0], 0,
 			[[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]],
- 			[3, "Paola", [29, 10, 2020], " ¿Saben si jahsj?", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Ana",10], 0, []]],
- 			 3, [10,"camila", [2,3,2020], "Si funciona", ["Verificar", "Problemas"], "Aceptada",5,2,0],SF).
+ 			[3, "Paola", [29, 10, 2020], " ¿Saben si jahsj?", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Ana",10], 0, []],
+ 			[0, "Pedro", [29, 10, 2020], "Esta prueba tambien funciona", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Alma",10], 0, 
+ 			[[0,"Pam", [2,3,2020], "Si tambien", ["Variables globales", "Problemas"], "Aceptada",6,2,0]]] ],
+ 			 0, [10,"camila", [2,3,2020], "Si funciona", ["Verificar", "Problemas"], "Aceptada",5,2,0],SF).
 
 
 
@@ -463,9 +472,16 @@ stack([["Juan","juan2000", 20, ["python","c++"]],[["Maria", "Maria1999", 50, ["R
  			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"],S).
 
 stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[], 
+			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
+			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
+ 			[[0,"Ana", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
+			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
+			[[3,"Maria", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
+			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
+ 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
  			10, 12],"Ana","A1234",S).
 
+answer(S,[2,2,2020],id,"CONTENIDO",["prueba"],S2).
 
 
 
@@ -495,32 +511,41 @@ agregarAskStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, Corr
 Stack2 = StackFinal.
 
 
-
-
 %7Desarrollo predicado answer.
 
-%Recibe una lista de preguntas.
-agregarResPreg([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[]]|Preguntas], IDP, [IDR, AR, FP, C, LE, EA, VF, VC, NR], [[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP, [[IDR, AR, FP, C, LE, EA, VF, VC, NR]]]|Preguntas]):-
-esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
+noExisteUsuarioActivo([]).
 
-agregarResPreg([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[Respuesta|Respuestas]]|Preguntas], IDP, [IDR, AR, FP, C, LE, EA, VF, VC, NR], [[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP, [[IDR, AR, FP, C, LE, EA, VF, VC, NR],Respuesta|Respuestas]]|Preguntas]):-
-esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-agregarResPreg([Pregunta|Preguntas], IDPreg, NewRespuesta, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewRespuesta, NewPreguntas).
-
+answer([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], Fecha, IDP, Contenido, ListEtiq, Stack2):-
+esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(ListEtiq),
+existePregunta(ListPreg,IDP), not(noExisteUsuarioActivo([NomUserActivo,CUA,RUA,REP])),
+CR is CorrRes + 1, agregarResPreg(ListPreg, IDP, [CorrRes, NomUserActivo, Fecha, Contenido, ListEtiq, "", 0, 0, 0], NewListPreg),
+Stack2 = [[], ListUser, NewListPreg, CorrPreg, CR].
 
 
-
-%tomarRes([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[Respuesta|Respuestas]]|Preguntas], IDP, [Respuesta|Respuestas]):- !.
-%tomarRes([Pregunta|Preguntas], IDPreg, Respuestas):- tomarRes(Preguntas, IDPreg, Respuestas).
+%8Desarrollo predicado accept.
 
 
+siExisteResAccept([[IDR, AutorRes, FP, C, LE, _, VF, VC, NR]|Respuestas], IDR, AutorRes, [[IDR, AutorRes, FP, C, LE, "Aceptada", VF, VC, NR]|Respuestas]):- !.
+siExisteResAccept([Respuesta|Respuestas], IDR, AutorRes, [Respuesta|NewRespuestas]):- siExisteResAccept(Respuestas, IDR, AutorRes, NewRespuestas).
 
 
-%answer(SKI, Fecha, IDP, Contenido, LE):-
-%esStack(SKI), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(LE),
-%getActivo(SK,USER),getNameUser(USER,NAME), %en caso de no haber usuario activo retorna false.
-%existePreguntaEnStack(SKI,IDP),
+siExistePregDeUserActivoYResAccept([[IDP,AP,FP,C,LE,EP,NV,VF,VC,[_,Monto],NR,Respuestas]|Preguntas], IDP, AP, IDR, AutorRes, Monto, NewPreg):-
+siExisteResAccept(Respuestas, IDR, Autor, NRespuestas), AutorRes = Autor, NewPreg = [[IDP,AP,FP,C,LE,EP,NV,VF,VC,["",0],NR,NRespuestas]|Preguntas], !.
 
+siExistePregDeUserActivoYResAccept([Pregunta|Preguntas], IDP, AP, IDR, AutorRes, Monto, [Pregunta|NewPreguntas]):- 
+siExistePregDeUserActivoYResAccept(Preguntas, IDP, AP, IDR, AutorRes, Monto, NewPreguntas).
+
+
+actualizarRepUser([[NameUser,Pass,Rep,Ref]|Usuarios], NameUser, Monto, [[NameUser,Pass,NewRep,Ref]|Usuarios]):- NewRep is Rep + Monto.
+actualizarRepUser([Usuario|Usuarios], NameUser, Monto, [Usuario|NewUsuarios]):- actualizarRepUser(Usuarios, NameUser, Monto, NewUsuarios).
+
+
+
+
+accept([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], IdPreg, IdRes, Stack2):-
+esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), integer(IdPreg), integer(IdRes),
+siExistePregDeUserActivoYResAccept(ListPreg, IdPreg, NomUserActivo, IdRes, AutorRes, MontoRecom, NewListPreg), M is MontoRecom + 15,
+actualizarRepUser(ListUser, NomUserActivo, 2, ListUser2), actualizarRepUser(ListUser2, AutorRes, M, ListUser3),
+Stack2 = [[], ListUser3, NewListPreg, CorrPreg, CorrRes].
 
 
