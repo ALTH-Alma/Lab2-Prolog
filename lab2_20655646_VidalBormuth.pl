@@ -401,15 +401,18 @@ actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, 
 
 %predicados extras:
 
-agregarUsuarioStack([UA, [], LP, CP, CR], [NomUser,PassUser,RepUser,ListRef], [UA, [NomUser,PassUser,RepUser,ListRef], LP, CP, CR]):- esUsuario([NomUser,PassUser,RepUser,ListRef]).
-agregarUsuarioStack([UA, [Usuario|Usuarios], LP, CP, CR], [NewNameUser, NewPassUser, NewRepUser, NewListRef], [UA, [[[NewNameUser, NewPassUser, NewRepUser, NewListRef],Usuario]|Usuarios], LP, CP, CR]):- 
-esUsuario([NewNameUser, NewPassUser, NewRepUser, NewListRef]), not(existeUsuario([Usuario|Usuarios],NewNameUser)).
+agregarUserStack([UA, [], LP, CP, CR], [NomUser, Pass, Reput, ListRef], [UA, [[NomUser, Pass, Reput, ListRef]], LP, CP, CR]):- esUsuario([NomUser,Pass,Reput, ListRef]).
+
+agregarUserStack([UA, [Usuario|Usuarios], LP, CP, CR], [NewNameUser, NewPass, NewReput, NewListRef], [UA, [[NewNameUser, NewPass, NewReput, NewListRef],Usuario|Usuarios], LP, CP, CR]):- 
+esUsuario([NewNameUser, NewPass, NewReput, NewListRef]), not(existeUsuario([Usuario|Usuarios], NewNameUser)).
 
 
-%autentificarUsuarioEnStack([_,ListUser,_,_,_], UserName, Pass, [,ListUser,_,_,_]):-
-%existeUsuario(ListUser,UserName), 
-%getUsuario(LU,USERNAME,USER), getPassUser(USER,P), 
-%P == PASS, U= USER.
+agregarAskStack([UA, LU, [], CP, CR], [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], NewCorrPreg, [[], LU, [[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]], NewCorrPreg, CR]):- 
+esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]).
+agregarAskStack([UA, LU, [Pregunta|Preguntas], CP, CR], [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], NewCorrPreg, [[], LU, [[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES], Pregunta|Preguntas], NewCorrPreg, CR]):- 
+esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RES]).
+
+
 
 
 
@@ -420,6 +423,8 @@ autentificarUser(Usuarios, NOMBRE, PASS, User).
 
 existePreguntaEnStack([UA, LU, LP, CP, CR],IDP):-
 existePregunta(LP,IDP).
+
+%agregarPreguntaStack([UA, LU, [], CP, CR], [NomUser,Pass,Reput,ListRef], [UA, [NomUser,Pass,Reput,ListRef], LP, CP, CR]):- esUsuario([NomUser,Pass,Rep,ListRef]).
 
 %_________________________________________
 %Desarrollo requerimiento 2: Hechos.
@@ -440,7 +445,14 @@ pregunta([1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gus
 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
  			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]).
 
-stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
+preguntas([[1, "Ana", [29, 10, 2020], " ¿Conocen alguna manera de jahsjh?", ["python","interfaz-gráfica"], "Abierta", 20, 5, 2,["",0], 0,
+			[[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]],
+ 			[3, "Paola", [29, 10, 2020], " ¿Saben si jahsj?", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Ana",10], 0, []]],
+ 			 3, [10,"camila", [2,3,2020], "Si funciona", ["Verificar", "Problemas"], "Aceptada",5,2,0],SF).
+
+
+
+stack([["Juan","juan2000", 20, ["python","c++"]],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
 			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
 			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
  			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
@@ -448,16 +460,10 @@ stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
  			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
- 			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"]).
+ 			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"],S).
 
-stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]]], 
-			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
-			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]] ], 
+stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
+			[], 
  			10, 12],"Ana","A1234",S).
 
 
@@ -469,45 +475,52 @@ stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 
 register(Stack, NewUserName, PassUser, Stack2):-
 esStack(Stack),string(NewUserName),string(PassUser),
-agregarUsuarioStack(Stack,[NewUserName, PassUser, 0, []], StackFinal),
+agregarUserStack(Stack,[NewUserName, PassUser, 0, []], StackFinal),
+Stack2 = StackFinal.
+
+
+%4Desarroloo predicado login:
+
+login([UserActivo, ListUser, ListPreg, CorrPreg, CorrRes], UserName, Pass, Stack2):-
+esStack([UserActivo, ListUser, ListPreg, CorrPreg, CorrRes]), string(UserName), string(Pass),
+autentificarUser(ListUser, UserName, Pass, UserAutentificado),
+Stack2= [UserAutentificado, ListUser, ListPreg, CorrPreg, CorrRes].
+
+
+%5Desarrollo predicado ask:
+
+ask([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq, Stack2):-
+esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(FechaP), string(ContP), esListaString(Etiq), NewCorrPreg is CorrPreg + 1,
+agregarAskStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], [CorrPreg, NomUserActivo, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]], NewCorrPreg, StackFinal),
 Stack2 = StackFinal.
 
 
 
 
-%4Desarroloo predicado login:
-
-login(SK, USERNAME, PASS, SKF):-
-esStack(SK),string(USERNAME),string(PASS),
-autentificarUser(SK,USERNAME,PASS,USER),
-actualizarStackLogin(SK,USER,S),
-SKF= S.
-
-
-%5Desarrollo predicado ask:
-
-
-
-askInter(SK, FP, CP, LE, SKF):-
-esStack(SK),esFecha(FP),string(CP),esListaString(LE),
-getActivo(SK,USER),getNameUser(USER,NAME),
-getCorrelativoPreg(SK,CNP), NEWCP is CNP + 1,
-crearPregunta(CNP,NAME,FP,CP,LE,"Abierta",0,0,0,["",0],0,[],NEWP), getListaPreguntas(SK,LP), agregarPregunta(LP,NEWP,NLP),
-actualizarStackAsk(SK,NLP,NEWCP,SKS),
-SKF = SKS.
-
-
-
-
-
-
 %7Desarrollo predicado answer.
+
+%Recibe una lista de preguntas.
+agregarResPreg([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[]]|Preguntas], IDP, [IDR, AR, FP, C, LE, EA, VF, VC, NR], [[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP, [[IDR, AR, FP, C, LE, EA, VF, VC, NR]]]|Preguntas]):-
+esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
+
+agregarResPreg([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[Respuesta|Respuestas]]|Preguntas], IDP, [IDR, AR, FP, C, LE, EA, VF, VC, NR], [[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP, [[IDR, AR, FP, C, LE, EA, VF, VC, NR],Respuesta|Respuestas]]|Preguntas]):-
+esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
+
+agregarResPreg([Pregunta|Preguntas], IDPreg, NewRespuesta, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewRespuesta, NewPreguntas).
+
+
+
+
+%tomarRes([[IDP,AP,FPP,CP,LEP,EP,NVP,VFP,VCP,RECP,NRP,[Respuesta|Respuestas]]|Preguntas], IDP, [Respuesta|Respuestas]):- !.
+%tomarRes([Pregunta|Preguntas], IDPreg, Respuestas):- tomarRes(Preguntas, IDPreg, Respuestas).
+
+
+
+
 %answer(SKI, Fecha, IDP, Contenido, LE):-
 %esStack(SKI), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(LE),
 %getActivo(SK,USER),getNameUser(USER,NAME), %en caso de no haber usuario activo retorna false.
 %existePreguntaEnStack(SKI,IDP),
 
 
-
-igual(P,V):- P =.. Lista, V=Lista.
 
