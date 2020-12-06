@@ -256,66 +256,105 @@ agregarAskStack([[NombreUA,_,_,_], LU, [Pregunta|Preguntas], CP, CR], FechaP, Co
 usuario(["Maria", "Maria1999", 50, ["Racket","c#"]]).
 usuario(["Ana","A1234", 70, ["java","python"]]).
 usuario(["Juan","juan2000", 20, ["python","c++"]]).
-usuario(["Pedro", "P340", 90,  ["python","c++"]]).
+usuario(["Pedro", "P340", 90,  ["java","c#"]]).
 
 
-
-%Ejemplo: [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tú mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]].
-
-%Ejemplo R1= [0, "Maria", [29, 2, 2020], "¿Por qué es considerado una mala práctica utilizar variables globales?,¿Realmente son perjudiciales?", ["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]].
-%Ejemplo R1= [0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0].
-
-pregunta([0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
- 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1]
+pregunta([0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]]).
+pregunta([1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]]).
+pregunta([2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]]).
+pregunta([3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]]).
+pregunta([4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]).
 
-pregunta([1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]).
-
-preguntas([[1, "Ana", [29, 10, 2020], " ¿Conocen alguna manera de jahsjh?", ["python","interfaz-gráfica"], "Abierta", 20, 5, 2,["",0], 0,
-			[[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]],
- 			[3, "Paola", [29, 10, 2020], " ¿Saben si jahsj?", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Ana",10], 0, []],
- 			[0, "Pedro", [29, 10, 2020], "Esta prueba tambien funciona", ["python","interfaz-gráfica"], "Abierta", 10, 3, 1,["Alma",10], 0, 
- 			[[0,"Pam", [2,3,2020], "Si tambien", ["Variables globales", "Problemas"], "Aceptada",6,2,0]]] ],
- 			 0, [10,"camila", [2,3,2020], "Si funciona", ["Verificar", "Problemas"], "Aceptada",5,2,0],SF).
-
+respuesta([2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0]).
+respuesta([1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1]).
+respuesta([0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]).
+respuesta([3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0]).
+respuesta([4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2]).
+respuesta([5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0]).
+respuesta([6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]).
+respuesta([7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0]).
+respuesta([8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]).
+respuesta([9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]).
 
 
-stack([],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
-			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
- 			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"],S).
-
-stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90,  ["python","c"]], 
+stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
 			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
  			[
- 			[2,"Ana", [2,3,2020], "Existen varias razones", ["Problemas", "variables"], "Pendiente",15,2,0],
- 			[1,"Pedro", [22,3,2020], "No es una mala practica", ["Variables globales"], "Rechazada",5,6,1],
- 			[0,"Maria", [12,5,2020], "Aumenta la complejidad y genera resultados impredecibles", ["Variables", "Problemas"], "Pendiente",20,3,0],
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
  			]],
-			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2,["",0], 0,
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
 			[
-			[3,"Maria", [2,1,2020], "Usando Designer", ["imagen"], "Aceptada",15,2,0],
-			[4, "Juan", [1, 3, 2020], "No se puede hacer", ["errores"], "Rechazada", 6, 11, 2],
- 			[5, "Pedro", [13, 11, 2020], "Usando Qt Style Sheet", [], "Aceptada", 36, 3, 0],
- 			[5, "Ana", [13, 11, 2020], "No lo se", [], "Pendiente", 2, 13, 3],
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]], 
- 			10, 12],"Ana","A1234",S).
+ 			5, 10]).
 
 
-answer(S,[2,2,2020],id,"CONTENIDO",["prueba"],S2).
+stack([[],[["Paola", "P1998", 53, ["Racket","c++"]],["Sam", "S123", 65, ["C#","python"]],["Pablo", "PO2001", 21, ["python","c"]],["Teo", "T342", 90, ["python","java"]]], 
+			[
+			[0, "Pablo", [28, 3, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 31, 12, 6, ["",0], 1, 
+ 			[
+ 			[2,"Sam", [12, 6, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 7, 3, 1],
+ 			[1,"Paola", [13, 4, 2020], "No es del todo una mala practica.", ["Variables globales"], "Rechazada", 6, 3, 0],
+ 			[0,"Teo", [4, 4, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Aceptada", 21, 2, 0]
+ 			]],
+			[1, "Paola", [9, 9, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Sam", [3, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 25, 3, 0],
+			[4, "Pablo", [20, 10, 2020], "No se puede hacer.", ["errores"], "Rechazada", 0, 15, 2],
+ 			[5, "Teo", [10, 10, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 2, 0]
+ 			]],
+ 			[2, "Pablo", [5, 11, 2020], "¿Como puedo hacer una lista de diferentes tipos de datos?", ["listas"], "Abierta", 20, 7, 13, ["Pedro",5], 0,
+			[
+			[6,"Teo", [7, 11, 2020], "Dependera del lenguaje.", ["construccion"], "Pendiente", 10, 2, 0],
+			[7, "Paola", [6, 11, 2020], "No siempre se puede.", ["listas", "lenguaje"], "Pendiente", 9, 3, 0]
+ 			]],
+ 			[3, "Sam", [30, 11, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 28, 17, 1, ["Sam",20], 0, 
+ 			[]],
+ 			[4, "Teo", [2, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 36, 19, 1, ["",0], 0,
+			[
+			[8,"Paola", [3, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["Visualizacion prolog"], "Aceptada", 24, 0, 0],
+ 			[9, "Pablo", [2, 12, 2020], "Parece que no se puede.", ["Texto prolog"], "Rechazada", 0, 20, 3]
+ 			]]], 
+ 			5, 10]).
 
 
+%_________________________________________
 
 %3Desarrollo predicado register:
 
@@ -336,19 +375,6 @@ ask([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq,
 esStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(FechaP), string(ContP), esListaString(Etiq), NewCorrPreg is CorrPreg + 1,
 agregarAskStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq, NewCorrPreg, Stack2).
 
-
-%PruebaAsk:
-
-
-([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Ana", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
-			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[3,"Maria", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
- 			10, 12], "Ana","A1234",SF),getListaUsuarios(SF,LU),getQuestion(SF,1,F),getRespuestasPreg(F,LR),getAnswer(SF,1,2,R),voteRes(LR,LU,R,true,FI,NLU).
 
 %7Desarrollo predicado answer.
 
@@ -400,22 +426,25 @@ Stack2 = [[], ListUser3, NewListPreg, CorrPreg, CorrRes].
 
 
 %Desarrollo predicado stackToString:
+listToString([],".").
+listToString([H|T],Final):- 
+atomics_to_string([" ",H, " -"], Str), listToString(T,Final2), string_concat(Str, Final2, Final).
 
 listUserToString([],"\n\n").
-listUserToString([[NameUser, Pass, Reputacion, Referencias]|Usuarios], StringFinal):-
-atomics_to_string(Referencias,Ref),
+listUserToString([[NameUser, Pass, Reputacion, Referencias]|Usuarios], StringFinal):- esUsuario([NameUser, Pass, Reputacion, Referencias]),
+listToString(Referencias,Ref),
 atomics_to_string(["Nombre Usuario: ",NameUser, "\nClave: ",Pass, "\nReputacion: ",Reputacion, "\nReferencias: ",Ref, "\n\n"], Str),
 listUserToString(Usuarios, StringFinal2), string_concat(Str, StringFinal2, StringFinal).
 
 listResToString([], "\n\n").
-listResToString([[IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]|Respuestas], StringRes):-
-atomics_to_string(Etiq,E), atomics_to_string([D,"/",M,"/",A],FP),
+listResToString([[IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]|Respuestas], StringRes):- esRespuesta([IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]),
+listToString(Etiq,E), atomics_to_string([D,"/",M,"/",A],FP),
 atomics_to_string(["ID Respuesta: ",IDR, "\nAutor: ",AR, "\nFecha: ",FP , "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EA, "\nVotos a favor: ",VF, "\nVotos en contra: ",VC, "\nReportes: ",NR, "\n\n"], Str),
 listResToString(Respuestas, StringRes2), string_concat(Str, StringRes2, StringRes).
 
 listPregToString([], "\n").
-listPregToString([[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas],StringPreg):-
-atomics_to_string(LE,E), atomics_to_string([D,"/",M,"/",A],FP), atomics_to_string([Ofertor, " ofrece ", Monto, " puntos "],R), listResToString(Respuestas,Res),
+listPregToString([[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas],StringPreg):- esPregunta([IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]),
+listToString(LE,E), atomics_to_string([D,"/",M,"/",A],FP), atomics_to_string([Ofertor, " ofrece ", Monto, " puntos "],R), listResToString(Respuestas,Res),
 atomics_to_string(["ID Pregunta: ",IDP, "\nAutor: ",AP, "\nFecha: ",FP, "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EP, "\nVisualizaciones: ",NV,"\nVotos a favor: ",VF, "\nVotos en contra: ",VC,"\nRecompensa: ",R, "\nReportes: ",NR,"\nRespuestas:\n\n",Res,"\n\n"], Str),
 listPregToString(Preguntas, StringPreg2), string_concat(Str, StringPreg2, StringPreg).
 
@@ -462,10 +491,13 @@ vote([UA,LU,Pregs,CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], Booleano, [N
 
 
 vote([[NUA,CU,RU,REP],LU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NLU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,NewResps]|Pregs],CP,CR]):-
-voteRes(Resps, LU, [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, NewResps, NLU), !, vote([[NUA,CU,RU,REP],LU,Pregs,CP,CR],[IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NewLU,Pregs,CP,CR]).
+voteRes(Resps, LU, [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, NewResps, NLU), !.
+
+vote():-
+vote([[NUA,CU,RU,REP],LU,Pregs,CP,CR],[IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NewLU,Pregs,CP,CR]).
 
 
-%Arreglar acept, vote y la funcion de listAString, constructires.
+%Arreglar acept, vote , constructires.
 
 
 
