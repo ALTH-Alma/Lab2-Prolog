@@ -1,6 +1,6 @@
 
 
-%Función extra:
+%FPredicado extra extra:
  esListaString([]).
  esListaString([H|T]):- string(H), esListaString(T).
 
@@ -129,10 +129,6 @@ getNameUser(H,NU), NU == NOMBRE, U= H.
 
 getUsuario([_|T], NOMBRE, U):-
 getUsuario(T, NOMBRE, U).
-
-
-
-
 
 
 %Función extra: verifica si existe un usuario en la lista de usuarios.
@@ -341,22 +337,15 @@ getPregunta([_|T], IDP, P):-
 getPregunta(T, IDP, P).
 
 
-%predicado para saber si existe una pregunta:
-%Utiliza el operador de corte para confirmar la existencia de una pregunta según su id en la lista de preguntas.
-existePregunta([[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]|_], IDP):- !.
-existePregunta([_|Preguntas], ID):-
-existePregunta(Preguntas, ID).
-
-
 
 %Recibe una lista de preguntas.
-agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer]]|Preguntas]):-
-esRespuesta(NewAnswer).
+%agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer]]|Preguntas]):-
+%esRespuesta(NewAnswer).
 
-agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[Respuesta|Respuestas]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer,Respuesta|Respuestas]]|Preguntas]):-
-esRespuesta(NewAnswer).
+%agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[Respuesta|Respuestas]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer,Respuesta|Respuestas]]|Preguntas]):-
+%esRespuesta(NewAnswer).
 
-agregarResPreg([Pregunta|Preguntas], IDPreg, NewAnswer, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewAnswer, NewPreguntas).
+%agregarResPreg([Pregunta|Preguntas], IDPreg, NewAnswer, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewAnswer, NewPreguntas).
 
 
  %_________________________________________
@@ -413,22 +402,19 @@ actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, 
 
 %predicados extras:
 
-agregarUserStack([UA, [], LP, CP, CR], NewUser, [UA, [NewUser], LP, CP, CR]):- esUsuario(NewUser).
-agregarUserStack([UA, [Usuario|Usuarios], LP, CP, CR], [NewNameUser, NewPass, NewReput, NewListRef], [UA, [[NewNameUser, NewPass, NewReput, NewListRef],Usuario|Usuarios], LP, CP, CR]):- 
-esUsuario([NewNameUser, NewPass, NewReput, NewListRef]), not(existeUsuario([Usuario|Usuarios], NewNameUser)).
+agregarUserStack([UA, [[NewNameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR], NewNameUser, NewPass, [UA, [[NewNameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR]):- !. %Si existe usuario.
+agregarUserStack([UA, [], LP, CP, CR], NameUser, Pass, [UA, [[NameUser, Pass, 0, []]], LP, CP, CR]):- string(NameUser),string(Pass).
+agregarUserStack([UA, [Usuario|Usuarios], LP, CP, CR], NewNameUser, NewPass, [UA, [Usuario|NewUsuarios], LP, CP, CR]):-
+agregarUserStack([UA, Usuarios, LP, CP, CR], NewNameUser, NewPass, [UA, NewUsuarios, LP, CP, CR]).
 
 
-
-agregarAskStack([UA, LU, [], CP, CR], NewAsk, NewCorrPreg, [[], LU, [NewAsk], NewCorrPreg, CR]):- 
-esPregunta(NewAsk).
-agregarAskStack([UA, LU, [Pregunta|Preguntas], CP, CR], NewAsk, NewCorrPreg, [[], LU, [NewAsk, Pregunta|Preguntas], NewCorrPreg, CR]):- 
-esPregunta(NewAsk).
+autentificarUser([UA, [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR], NameUser, Pass, [[NameUser,Pass,Reput,Ref], [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR]):- !. %Si se autentifica usuario.
+autentificarUser([UA, [Usuario|Usuarios], LP, CP, CR], NameUser, Pass, [NewUA, [Usuario|NewUsuarios], LP, CP, CR]):-
+autentificarUser([UA, Usuarios, LP, CP, CR], NameUser, Pass, [NewUA, NewUsuarios, LP, CP, CR]).
 
 
-autentificarUser([[NOMBRE,PASS,RepUser,ListRef]|_], NOMBRE, PASS, [NOMBRE,PASS,RepUser,ListRef]):- !.
-autentificarUser([_|Usuarios], NOMBRE, PASS, User):-
-autentificarUser(Usuarios, NOMBRE, PASS, User).
-
+agregarAskStack([[NombreUA,_,_,_], LU, [], CP, CR], FechaP, ContP, Etiq, NewCorrPreg, [[], LU, [[CP, NombreUA, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]]], NewCorrPreg, CR]).
+agregarAskStack([[NombreUA,_,_,_], LU, [Pregunta|Preguntas], CP, CR], FechaP, ContP, Etiq, NewCorrPreg, [[], LU, [[CP, NombreUA, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]], Pregunta|Preguntas], NewCorrPreg, CR]).
 
 
 %agregarPreguntaStack([UA, LU, [], CP, CR], [NomUser,Pass,Reput,ListRef], [UA, [NomUser,Pass,Reput,ListRef], LP, CP, CR]):- esUsuario([NomUser,Pass,Rep,ListRef]).
@@ -490,44 +476,70 @@ answer(S,[2,2,2020],id,"CONTENIDO",["prueba"],S2).
 %3Desarrollo predicado register:
 
 register(Stack, NewUserName, PassUser, Stack2):-
-esStack(Stack),string(NewUserName),string(PassUser),
-agregarUserStack(Stack,[NewUserName, PassUser, 0, []], StackFinal),
-Stack2 = StackFinal.
+esStack(Stack), agregarUserStack(Stack, NewUserName, PassUser, Stack2).
 
 
 %4Desarroloo predicado login:
 
-login([UserActivo, ListUser, ListPreg, CorrPreg, CorrRes], UserName, Pass, Stack2):-
-esStack([UserActivo, ListUser, ListPreg, CorrPreg, CorrRes]), string(UserName), string(Pass),
-autentificarUser(ListUser, UserName, Pass, UserAutentificado),
-Stack2= [UserAutentificado, ListUser, ListPreg, CorrPreg, CorrRes].
+login(Stack, UserName, Pass, Stack2):-
+esStack(Stack), string(UserName), string(Pass),
+autentificarUser(Stack, UserName, Pass, Stack2).
 
 
 %5Desarrollo predicado ask:
 
-ask([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq, Stack2):-
-esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(FechaP), string(ContP), esListaString(Etiq), NewCorrPreg is CorrPreg + 1,
-agregarAskStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], [CorrPreg, NomUserActivo, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]], NewCorrPreg, StackFinal),
-Stack2 = StackFinal.
+ask([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq, Stack2):-
+esStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(FechaP), string(ContP), esListaString(Etiq), NewCorrPreg is CorrPreg + 1,
+agregarAskStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, ContP, Etiq, NewCorrPreg, Stack2).
 
+
+%PruebaAsk:
+
+
+([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
+			[[0, "Ana", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
+			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
+ 			[[0,"Ana", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
+			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
+			[[3,"Maria", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
+			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
+ 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
+ 			10, 12], "Ana","A1234",SF),answer(SF, [2,2,2020], 1, "Respuesta", ["prueba","funciona"], S2).
 
 %7Desarrollo predicado answer.
 
-noExisteUsuarioActivo([]).
+	
 
-answer([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], Fecha, IDP, Contenido, ListEtiq, Stack2):-
-esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(ListEtiq),
-existePregunta(ListPreg,IDP), not(noExisteUsuarioActivo([NomUserActivo,CUA,RUA,REP])),
-CR is CorrRes + 1, agregarResPreg(ListPreg, IDP, [CorrRes, NomUserActivo, Fecha, Contenido, ListEtiq, "", 0, 0, 0], NewListPreg),
-Stack2 = [[], ListUser, NewListPreg, CorrPreg, CR].
+%Recibe una lista de preguntas.
+
+agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LUser,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0]]]|Pregs],CP,NCR]):- !.
+agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[Res|Resps]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0],Res|Resps]]|Pregs],CP,NCR]):- !.
+agregarResPreg([UA,LU,[Preg|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [NewUA,LU,[Preg|NewPregs],CP,NCR]):- agregarResPreg([UA,LU,Pregs,CP,CR], IDP, Fecha, Cont, Etiq, NCR, [NewUA,LU,NewPregs,CP,NCR]).
 
 
-%8Desarrollo predicado accept.
+noExisteUsuarioActivo([]):- !.
+
+%predicado para saber si existe una pregunta:
+
+%Utiliza el operador de corte para confirmar la existencia de una pregunta según su id en la lista de preguntas.
+existePregEnStack([UA,LU,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]|_],CP,CR], IDP):- !.
+existePregEnStack([UA,LU,[_|Preguntas],CP,CR], IDP):-
+existePregEnStack([UA,LU,Preguntas,CP,CR], IDP).
+
+
+answer([UA,LU,LP,CP,CR], Fecha, IDP, Contenido, ListEtiq, Stack2):-
+esStack([UA,LU,LP,CP,CR]), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(ListEtiq), 
+existePregEnStack([UA,LU,LP,CP,CR],IDP), not(noExisteUsuarioActivo(UA)), NCR is CR + 1, 
+agregarResPreg([UA,LU,LP,CP,CR], IDP, Fecha, Contenido, ListEtiq, NCR, Stack2).
+
+
+
+
+%8Desarrollo predicado accept:
 
 
 siExisteResAccept([[IDR, AutorRes, FP, C, LE, _, VF, VC, NR]|Respuestas], IDR, AutorRes, [[IDR, AutorRes, FP, C, LE, "Aceptada", VF, VC, NR]|Respuestas]):- !.
 siExisteResAccept([Respuesta|Respuestas], IDR, AutorRes, [Respuesta|NewRespuestas]):- siExisteResAccept(Respuestas, IDR, AutorRes, NewRespuestas).
-
 
 siExistePregDeUserActivoYResAccept([[IDP,AP,FP,C,LE,EP,NV,VF,VC,[_,Monto],NR,Respuestas]|Preguntas], IDP, AP, IDR, AutorRes, Monto, NewPreg):-
 siExisteResAccept(Respuestas, IDR, Autor, NRespuestas), AutorRes = Autor, NewPreg = [[IDP,AP,FP,C,LE,EP,NV,VF,VC,["",0],NR,NRespuestas]|Preguntas], !.
@@ -535,11 +547,8 @@ siExisteResAccept(Respuestas, IDR, Autor, NRespuestas), AutorRes = Autor, NewPre
 siExistePregDeUserActivoYResAccept([Pregunta|Preguntas], IDP, AP, IDR, AutorRes, Monto, [Pregunta|NewPreguntas]):- 
 siExistePregDeUserActivoYResAccept(Preguntas, IDP, AP, IDR, AutorRes, Monto, NewPreguntas).
 
-
 actualizarRepUser([[NameUser,Pass,Rep,Ref]|Usuarios], NameUser, Monto, [[NameUser,Pass,NewRep,Ref]|Usuarios]):- NewRep is Rep + Monto.
 actualizarRepUser([Usuario|Usuarios], NameUser, Monto, [Usuario|NewUsuarios]):- actualizarRepUser(Usuarios, NameUser, Monto, NewUsuarios).
-
-
 
 
 accept([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], IdPreg, IdRes, Stack2):-
@@ -547,5 +556,40 @@ esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), i
 siExistePregDeUserActivoYResAccept(ListPreg, IdPreg, NomUserActivo, IdRes, AutorRes, MontoRecom, NewListPreg), M is MontoRecom + 15,
 actualizarRepUser(ListUser, NomUserActivo, 2, ListUser2), actualizarRepUser(ListUser2, AutorRes, M, ListUser3),
 Stack2 = [[], ListUser3, NewListPreg, CorrPreg, CorrRes].
+
+
+
+%Desarrollo predicado stackToString:
+
+listUserToString([],"\n\n").
+listUserToString([[NameUser, Pass, Reputacion, Referencias]|Usuarios], StringFinal):-
+atomics_to_string(Referencias,Ref),
+atomics_to_string(["Nombre Usuario: ",NameUser, "\nClave: ",Pass, "\nReputacion: ",Reputacion, "\nReferencias: ",Ref, "\n\n"], Str),
+listUserToString(Usuarios, StringFinal2), string_concat(Str, StringFinal2, StringFinal).
+
+listResToString([], "\n\n").
+listResToString([[IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]|Respuestas], StringRes):-
+atomics_to_string(Etiq,E), atomics_to_string([D,"/",M,"/",A],FP),
+atomics_to_string(["ID Respuesta: ",IDR, "\nAutor: ",AR, "\nFecha: ",FP , "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EA, "\nVotos a favor: ",VF, "\nVotos en contra: ",VC, "\nReportes: ",NR, "\n\n"], Str),
+listResToString(Respuestas, StringRes2), string_concat(Str, StringRes2, StringRes).
+
+listPregToString([], "\n").
+listPregToString([[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas],StringPreg):-
+atomics_to_string(LE,E), atomics_to_string([D,"/",M,"/",A],FP), atomics_to_string([Ofertor, " ofrece ", Monto, " puntos "],R), listResToString(Respuestas,Res),
+atomics_to_string(["ID Pregunta: ",IDP, "\nAutor: ",AP, "\nFecha: ",FP, "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EP, "\nVisualizaciones: ",NV,"\nVotos a favor: ",VF, "\nVotos en contra: ",VC,"\nRecompensa: ",R, "\nReportes: ",NR,"\nRespuestas:\n\n",Res,"\n\n"], Str),
+listPregToString(Preguntas, StringPreg2), string_concat(Str, StringPreg2, StringPreg).
+
+allPregUsuario([],_,[]).
+allPregUsuario([[IDP,NameUser,FP,C,LE,EP,NV,VF,VC,R,NR,Res]|Pregs], NameUser, [[IDP,NameUser,FP,C,LE,EP,NV,VF,VC,R,NR,Res]|NewPreg]):- allPregUsuario(Pregs, NameUser, NewPreg).
+allPregUsuario([Preg|Pregs], NameUser, NewPregs):- allPregUsuario(Pregs, NameUser, NewPregs).
+
+
+
+stackToString([[], LU, LP, CP, CR], StackStr):- esStack([[], LU, LP, CP, CR]),
+listUserToString(LU,LUStr), listPregToString(LP,LPStr), atomics_to_string(["StackOverflow:\n\n", "Usuarios:\n",LUStr, "Preguntas:\n",LPStr], StackStr).
+
+stackToString([[NUA,CU,RU,REP], LU, LP, CP, CR], StackStr):- esStack([[NUA,CU,RU,REP], LU, LP, CP, CR]),
+listUserToString([[NUA,CU,RU,REP]],UAStr),allPregUsuario(LP,NUA,NLP), listPregToString(NLP,LPStr),
+atomics_to_string(["\nUsuario Activo:\n",UAStr, "Preguntas usuario:\n",LPStr], StackStr).
 
 
