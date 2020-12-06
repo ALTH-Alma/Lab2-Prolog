@@ -1,9 +1,7 @@
 
-
 %FPredicado extra extra:
  esListaString([]).
  esListaString([H|T]):- string(H), esListaString(T).
-
 
 %_________________________________________
 
@@ -16,17 +14,10 @@ integer(D), integer(M), integer(A),
 D > 0, D < 32, M > 0, M < 13,
 F=[D,M,A].
 
-
 %Capa pertenencia:
 esFecha([D,M,A]):- 
 integer(D), integer(M), integer(A),
 D > 0, D < 32, M > 0, M < 13.
-
-%Capa selector:
-getDia([D,M,A],D):- esFecha([D,M,A]).
-getMes([D,M,A],M):- esFecha([D,M,A]).
-getAno([D,M,A],A):- esFecha([D,M,A]).
-
 
 %_________________________________________
 
@@ -45,11 +36,6 @@ esRecompensa([O,MT]):-
 string(O), integer(MT), 
 MT>0; ([O,MT]==["",0]).
 
-%Capa selector:
-getOfertor([O,MT],O):- esRecompensa([O,MT]).
-getMontoRecompensa([O,MT],MT):- esRecompensa([O,MT]).
-
-
 %_________________________________________
 
 %TDA usuario: representa un usuario y sus elementos obligatorios.
@@ -66,11 +52,6 @@ string(NU), string(CU), integer(RU), esListaString(LR),
 RU > -1,
 USUARIO= [NU,CU,RU,LR].
 
-%Ejemplo U1= ["Maria", "Maria1999", 50, ["Racket","c#"]].
-%Ejemplo U2= ["Ana","A1234", 70, ["java","python"]].
-%Ejemplo U3= ["Juan","juan2000", 20, ["python","c++"]].
-%Ejemplo U4= ["Pedro", "P340", 90,  ["python","c++"]].
-
 %Capa pertenencia:
 %Entrada: una lista de elementos que sirve como postulante a un usuario.
 %Salida: un booleano, un trus si la lista es un usuario y un false sino.
@@ -79,22 +60,6 @@ esUsuario([]).
 esUsuario([NU,CU,RU,LR]):-
 string(NU), string(CU), integer(RU), esListaString(LR),
 RU > -1 .
-
-%Capa selector:
-%Entrada: todas los predicados de la capa selector reciben un usuario y una variable para guardar el dato buscado.
-
-%Salida: un string, nombre del usuario.
-getNameUser([NU,CU,RU,LR],NU):- esUsuario([NU,CU,RU,LR]).
-
-%Entrada: un string, contraseña del usuario.
-getPassUser([NU,CU,RU,LR],CU):- esUsuario([NU,CU,RU,LR]).
-
-%Salida: un entero mayor que 0, puntos de reputación del usuario.
-getReputUser([NU,CU,RU,LR],RU):- esUsuario([NU,CU,RU,LR]).
-
-%Salida: una lista de strings, una lista de las referencias del usuario.
-getRefeUser([NU,CU,RU,LR],LR):- esUsuario([NU,CU,RU,LR]).
-
 
 %_________________________________________
 
@@ -108,27 +73,6 @@ getRefeUser([NU,CU,RU,LR],LR):- esUsuario([NU,CU,RU,LR]).
 esListaUserVacia([]).
 esListaUsuarios([]).
 esListaUsuarios([H|T]):- esUsuario(H),esListaUsuarios(T).
-
-
-%Capa modificador:
-%Entrada: una lista de usuarios o una nueva lista vacia, el nuevo usuario y una variable para asignar la nueva lista de usuarios con el usuario incluido.
-%Salida: un nueva lista de usuarios.
-
-agregarUsuario([], [NU,CU,RU,LR], [[NU,CU,RU,LR]]):- esUsuario([NU,CU,RU,LR]). %caso base
-agregarUsuario([H|T], [NU,CU,RU,LR], [H|NEWT]):- 
-esListaUsuarios([H|T]),
-agregarUsuario(T, [NU,CU,RU,LR], NEWT). 
-
-%Ejemplo: [["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]]].
-
-%Capa selector: entrega a un usuario en una lista de usuarios al idendificarlo por su nombre.
-%Entrada: una lista de usuarios, un string NOMBRE (nombre del usuario que se desea obtener) y una variable U para asignar al usuario.
-%Salida: un usuario.
-getUsuario([[]|_], NOMBRE, U):- 
-getNameUser(H,NU), NU == NOMBRE, U= H.
-
-getUsuario([_|T], NOMBRE, U):-
-getUsuario(T, NOMBRE, U).
 
 
 %Función extra: verifica si existe un usuario en la lista de usuarios.
@@ -155,8 +99,6 @@ integer(IDR), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA),
 IDR > -1, VF > -1, VC > -1, NR > -1,
 RESPUESTA= [IDR, AR, FP, C, LE, EA, VF, VC, NR].
 
-%Ejemplo R1= [0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0].
-
 %Capa pertenencia:
 %Entrada: una lista de elementos que sirve como postulante a ser una respuesta.
 %Salida: un booleano, un true si la lista es una respuesta y un false sino.
@@ -166,35 +108,6 @@ esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]):-
 integer(IDR), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), integer(VF), integer(VC), integer(NR),
 IDR > -1, VF > -1, VC > -1, NR > -1 .
 
-%Capa selector:
-%Entrada: todas los predicados de la capa selector reciben una respuesta y una variable para guardar el dato buscado.
-
-%Salida: un entero, ID de la respuesta.
-getIdRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],IDR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un string, nombre del autor de la respuesta.
-getAutorRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],AR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: una fecha, fecha de publicación de la respuesta.
-getFechaRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],FP):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un string, contenido de la respuesta.
-getContenidoRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],C):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un lista de strings, lista de etiquetas de la respuesta.
-getListaDeEtiquetasRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],LE):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un string, estado de aceptación de la respuesta.
-getEstadoRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],EA):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un entero, votos a favor de la respuesta.
-getVotosAFavorRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],VF):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un entero, votos en contra de la respuesta.
-getVotosEnContraRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],VC):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
-
-%Salida: un entero, reportes de la respuesta.
-getReportesRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],NR):- esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]).
 
 %_________________________________________
 
@@ -204,7 +117,6 @@ getReportesRes([IDR, AR, FP, C, LE, EA, VF, VC, NR],NR):- esRespuesta([IDR, AR, 
 %Capa pertenencia:
 %Entrada: una lista con elementos, sirve como postulante para una lista de respuestas.
 %Salida: un booleano, un true si la lista corresponde a una lista de respuestas y un false sino.
-esListaRespuestasVacia([]).
 esListaRespuestas([]).
 esListaRespuestas([H|T]):- esRespuesta(H),esListaRespuestas(T).
 
@@ -218,19 +130,6 @@ esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]). %caso base
 agregarRespuesta([H|T], [IDR, AR, FP, C, LE, EA, VF, VC, NR], [H|NEWT]):- 
 esListaRespuestas([H|T]),
 agregarRespuesta(T, [IDR, AR, FP, C, LE, EA, VF, VC, NR], NEWT). 
-
-%Ejemplo: [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tú mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]].
-
-%Capa selector: entrega una respuesta en una lista de respuesta al idendificarla por su id.
-%Entrada: una lista de respuestas, un entero IDR (identificador de la respuesta que se desea obtener) y una variable R para asignar la respuesta.
-%Salida: una respuestas.
-
-getRespuesta([H|_], IDR, R):- 
-getIdRes(H,ID), ID == IDR, R= H.
-
-getRespuesta([_|T], IDR, R):-
-getRespuesta(T, IDR, R).
-
 
 %_________________________________________
 
@@ -252,8 +151,6 @@ integer(IDP),string(AP),esFecha(FP),string(C),esListaString(LE),string(EP),integ
 IDP > -1, NV > -1, VF > -1, VC > -1, NR > -1,
 PREGUNTA= [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS].
 
-%Ejemplo R1= [0, "Maria", [29, 2, 2020], "¿Por qué es considerado una mala práctica utilizar variables globales?,¿Realmente son perjudiciales?", ["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]].
-
 %Capa pertenencia:
 %Entrada: una lista de elementos que sirve como postulante a ser una pregunta.
 %Salida: un booleano, un true si la lista es una pregunta y un false sino.
@@ -269,39 +166,8 @@ IDP > -1, NV > -1, VF > -1, VC > -1, NR > -1 .
 %Salida: un entero, ID de la pregunta.
 getIdPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],IDP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
 
-%Salida: un string, nombre del autor de la pregunta.
-getAutorPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],AP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: una fecha, fecha de publicación de la pregunta.
-getIdFechaPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],FP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un string, contenido de la pregunta.
-getContenidoPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],C):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: una lista de strings, lista de etiquetas de la pregunta.
-getEtiquetasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],LE):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un string, estado de la pregunta.
-getEstadoPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],EP):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un entero, número de visualizaciones de la pregunta.
-getVisualizaciones([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],NV):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un entero, votos a favor de la pregunta.
-getVotosAFavorPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],VF):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un entero, votos en contra de la pregunta.
-getVotosEnContraPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],VC):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: una recompensa, recompensa ofrecida por la pregunta.
-getRecompensaPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],REC):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: un entero, número de reportes de la pregunta.
-getReportesPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],NR):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
 %Salida: una lista de respuestas, respuestas de la pregunta.
 getRespuestasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],RESPUESTAS):- esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
 
 %_________________________________________
 
@@ -326,29 +192,7 @@ agregarPregunta([H|T], [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],  [H|NEWT]
 esListaPreguntas([H|T]),
 agregarPregunta(T, [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS], NEWT). 
 
-%Capa selector: entrega a una pregunta en una lista de preguntas al idendificarla por su id.
-%Entrada: una lista de preguntas, un entero IDP (identificador de la pregunta que se desea obtener) y una variable P para asignar la pregunta.
-%Salida: un pregunta.
-
-getPregunta([H|_], IDP, P):- 
-getIdPreg(H,ID), ID == IDP, P= H.
-
-getPregunta([_|T], IDP, P):-
-getPregunta(T, IDP, P).
-
-
-
-%Recibe una lista de preguntas.
-%agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer]]|Preguntas]):-
-%esRespuesta(NewAnswer).
-
-%agregarResPreg([[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[Respuesta|Respuestas]]|Preguntas], IDP, NewAnswer, [[IDP,A,FP,C,LE,E,NV,VF,VC,REC,NR,[NewAnswer,Respuesta|Respuestas]]|Preguntas]):-
-%esRespuesta(NewAnswer).
-
-%agregarResPreg([Pregunta|Preguntas], IDPreg, NewAnswer, [Pregunta|NewPreguntas]):- agregarResPreg(Preguntas, IDPreg, NewAnswer, NewPreguntas).
-
-
- %_________________________________________
+%_________________________________________
 
 %TDA stack: representa a Stack Overflow.
 %Representación: stack [usuario Sesión activa, lista de usuarios Registrados, lista de preguntas Preguntas stack, entero Correlativo pregunta, entero Correlativo respuestas].
@@ -391,14 +235,6 @@ getCorrelativoPreg([UA, LU, LP, CP, CR],CP):- esStack([UA, LU, LP, CP, CR]).
 %Salida: un entero, correlativo de respuestas en el stack.
 getCorrelativoRes([UA, LU, LP, CP, CR],CR):- esStack([UA, LU, LP, CP, CR]).
 
-%Capa modificador:
-
-actualizarStackRegister([UA, LU, LP, CP, CR], NEWLU, [UA, NEWLU, LP, CP, CR]):- esListaUsuarios(NEWLU).
-
-actualizarStackLogin([UA, LU, LP, CP, CR], REGISTRADO, [REGISTRADO, LU, LP, CP, CR]):- esUsuario(REGISTRADO).
-
-actualizarStackAsk([UA, LU, LP, CP, CR], NEWLP, NEWCOP, [[], LU, NEWLP, NEWCOP, CR]):- esListaPreguntas(NEWLP).
-
 
 %predicados extras:
 
@@ -407,17 +243,12 @@ agregarUserStack([UA, [], LP, CP, CR], NameUser, Pass, [UA, [[NameUser, Pass, 0,
 agregarUserStack([UA, [Usuario|Usuarios], LP, CP, CR], NewNameUser, NewPass, [UA, [Usuario|NewUsuarios], LP, CP, CR]):-
 agregarUserStack([UA, Usuarios, LP, CP, CR], NewNameUser, NewPass, [UA, NewUsuarios, LP, CP, CR]).
 
-
-autentificarUser([UA, [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR], NameUser, Pass, [[NameUser,Pass,Reput,Ref], [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR]):- !. %Si se autentifica usuario.
-autentificarUser([UA, [Usuario|Usuarios], LP, CP, CR], NameUser, Pass, [NewUA, [Usuario|NewUsuarios], LP, CP, CR]):-
-autentificarUser([UA, Usuarios, LP, CP, CR], NameUser, Pass, [NewUA, NewUsuarios, LP, CP, CR]).
-
+autentificarUserEnStack([UA, [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR], NameUser, Pass, [[NameUser,Pass,Reput,Ref], [[NameUser,Pass,Reput,Ref]|Usuarios], LP, CP, CR]):- !. 
+autentificarUserEnStack([UA, [Usuario|Usuarios], LP, CP, CR], NameUser, Pass, [NewUA, [Usuario|NewUsuarios], LP, CP, CR]):-
+autentificarUserEnStack([UA, Usuarios, LP, CP, CR], NameUser, Pass, [NewUA, NewUsuarios, LP, CP, CR]).
 
 agregarAskStack([[NombreUA,_,_,_], LU, [], CP, CR], FechaP, ContP, Etiq, NewCorrPreg, [[], LU, [[CP, NombreUA, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]]], NewCorrPreg, CR]).
 agregarAskStack([[NombreUA,_,_,_], LU, [Pregunta|Preguntas], CP, CR], FechaP, ContP, Etiq, NewCorrPreg, [[], LU, [[CP, NombreUA, FechaP, ContP, Etiq,"Abierta",0,0,0,["",0],0,[]], Pregunta|Preguntas], NewCorrPreg, CR]).
-
-
-%agregarPreguntaStack([UA, LU, [], CP, CR], [NomUser,Pass,Reput,ListRef], [UA, [NomUser,Pass,Reput,ListRef], LP, CP, CR]):- esUsuario([NomUser,Pass,Rep,ListRef]).
 
 %_________________________________________
 %Desarrollo requerimiento 2: Hechos.
@@ -426,6 +257,13 @@ usuario(["Maria", "Maria1999", 50, ["Racket","c#"]]).
 usuario(["Ana","A1234", 70, ["java","python"]]).
 usuario(["Juan","juan2000", 20, ["python","c++"]]).
 usuario(["Pedro", "P340", 90,  ["python","c++"]]).
+
+
+
+%Ejemplo: [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tú mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]].
+
+%Ejemplo R1= [0, "Maria", [29, 2, 2020], "¿Por qué es considerado una mala práctica utilizar variables globales?,¿Realmente son perjudiciales?", ["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, [[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]].
+%Ejemplo R1= [0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0].
 
 pregunta([0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
 			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
@@ -447,7 +285,7 @@ preguntas([[1, "Ana", [29, 10, 2020], " ¿Conocen alguna manera de jahsjh?", ["p
 
 
 
-stack([["Juan","juan2000", 20, ["python","c++"]],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
+stack([],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
 			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
 			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
  			[[0,"Pedro", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
@@ -457,19 +295,25 @@ stack([["Juan","juan2000", 20, ["python","c++"]],[["Maria", "Maria1999", 50, ["R
  			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
  			10, 12],[02,10,2010], "esto funciona?",["prueba","ask"],S).
 
-stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
-			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
- 			[[0,"Ana", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
-			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
-			[[3,"Maria", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
-			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
- 			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
+stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90,  ["python","c"]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [2,3,2020], "Existen varias razones", ["Problemas", "variables"], "Pendiente",15,2,0],
+ 			[1,"Pedro", [22,3,2020], "No es una mala practica", ["Variables globales"], "Rechazada",5,6,1],
+ 			[0,"Maria", [12,5,2020], "Aumenta la complejidad y genera resultados impredecibles", ["Variables", "Problemas"], "Pendiente",20,3,0],
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2,["",0], 0,
+			[
+			[3,"Maria", [2,1,2020], "Usando Designer", ["imagen"], "Aceptada",15,2,0],
+			[4, "Juan", [1, 3, 2020], "No se puede hacer", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [13, 11, 2020], "Usando Qt Style Sheet", [], "Aceptada", 36, 3, 0],
+ 			[5, "Ana", [13, 11, 2020], "No lo se", [], "Pendiente", 2, 13, 3],
+ 			]]], 
  			10, 12],"Ana","A1234",S).
 
+
 answer(S,[2,2,2020],id,"CONTENIDO",["prueba"],S2).
-
-
 
 
 
@@ -483,7 +327,7 @@ esStack(Stack), agregarUserStack(Stack, NewUserName, PassUser, Stack2).
 
 login(Stack, UserName, Pass, Stack2):-
 esStack(Stack), string(UserName), string(Pass),
-autentificarUser(Stack, UserName, Pass, Stack2).
+autentificarUserEnStack(Stack, UserName, Pass, Stack2).
 
 
 %5Desarrollo predicado ask:
@@ -504,12 +348,11 @@ agregarAskStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, 
 			[[3,"Maria", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0],
 			[1, "Juan", [1, 3, 2020], "El problema de las variables globales es que crea dependencias ocultas. Cuando se trata de aplicaciones grandes, ni tu mismo sabes/recuerdas/tienes claro los objetos que tienes y sus relaciones.", ["Malas practicas","errores"], "", 2, 9, 1],
  			[2, "Maria", [13, 11, 2020], "Usando Qt Style Sheet", [], "Rechazada", 6, 3, 0]]]], 
- 			10, 12], "Ana","A1234",SF),answer(SF, [2,2,2020], 1, "Respuesta", ["prueba","funciona"], S2).
+ 			10, 12], "Ana","A1234",SF),getListaUsuarios(SF,LU),getQuestion(SF,1,F),getRespuestasPreg(F,LR),getAnswer(SF,1,2,R),voteRes(LR,LU,R,true,FI,NLU).
 
 %7Desarrollo predicado answer.
 
 	
-
 %Recibe una lista de preguntas.
 
 agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0]]]|Pregs],CP,NCR]):- !.
@@ -530,8 +373,6 @@ answer([UA,LU,LP,CP,CR], Fecha, IDP, Contenido, ListEtiq, Stack2):-
 esStack([UA,LU,LP,CP,CR]), esFecha(Fecha), integer(IDP), string(Contenido), esListaString(ListEtiq), 
 existePregEnStack([UA,LU,LP,CP,CR],IDP), not(noExisteUsuarioActivo(UA)), NCR is CR + 1, 
 agregarResPreg([UA,LU,LP,CP,CR], IDP, Fecha, Contenido, ListEtiq, NCR, Stack2).
-
-
 
 
 %8Desarrollo predicado accept:
@@ -603,6 +444,12 @@ getAnswer([UA,LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,Respuestas]|Pregs],CP,CR], IDP
 getAnswer([UA,LU,[_|Preguntas],CP,CR], IDP, IDR, Respuesta):- getAnswer([UA,LU,Preguntas,CP,CR], IDP, IDR, Respuesta).
 
 
+voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], true, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
+NVF is VF + 1, NVC is VC, actualizarRepUser(LU, AR, 10, NLU).
+voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], false, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
+NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
+voteRes([Res|Resps], LU, Respuesta, Booleano, [Res|NewResps], NLU):- voteRes(Resps, LU, Respuesta, Booleano, NewResps, NewLU).
+
 
 vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], true, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
 NVF is VF + 1, NVC is VC, actualizarRepUser(LU, NUA, 10, NLU).
@@ -610,15 +457,15 @@ NVF is VF + 1, NVC is VC, actualizarRepUser(LU, NUA, 10, NLU).
 vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], false, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
 NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
 
-vote([UA,LU,[Preg|Pregs],CP,CR], Pregunta, Booleano, [NewUA,NewLU,[Preg|NewPregs],CP,CR]):- vote([UA,LU,Pregs,CP,CR], Pregunta, Booleano, [NewUA,NewLU,NewPregs,CP,CR]).
+vote([UA,LU,[Preg|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], Booleano, [NewUA,NewLU,[Preg|NewPregs],CP,CR]):- 
+vote([UA,LU,Pregs,CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], Booleano, [NewUA,NewLU,NewPregs,CP,CR]).
 
 
+vote([[NUA,CU,RU,REP],LU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NLU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,NewResps]|Pregs],CP,CR]):-
+voteRes(Resps, LU, [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, NewResps, NLU), !, vote([[NUA,CU,RU,REP],LU,Pregs,CP,CR],[IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NewLU,Pregs,CP,CR]).
 
 
-
-
-%vote([[NUA,CU,RU,REP], LU, LP, CP, CR], [IDP,NUA,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas], true, Stack2):- 
-
+%Arreglar acept, vote y la funcion de listAString, constructires.
 
 
 
