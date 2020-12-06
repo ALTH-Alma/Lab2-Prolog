@@ -497,7 +497,7 @@ agregarAskStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, 
 
 
 ([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["an","H123",0,[]]], 
-			[[0, "Ana", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
+			[[0, "Maria", [29, 2, 2020], "¿Por que es considerado una mala practica utilizar variables globales?,¿Realmente son perjudiciales?", 
 			["Malas practicas","variables globales"], "Abierta", 10, 3, 2, ["Maria", 10], 1, 
  			[[0,"Ana", [2,3,2020], "Aumenta la complejidad y puede generar resultados impredecibles", ["Variables globales", "Problemas"], "Aceptada",5,2,0]]],
 			[1, "Ana", [29, 10, 2020], "¿Como poner una imagen de fondo en? Me gustaria saber ¿Como pongo una imagen de fondo a la ventana creada con PyQT5? Muchos me dicen que use Designer, pero estoy evitando usarlo. ¿Conocen alguna manera?", ["python","interfaz-gráfica","imagen"], "Abierta", 20, 5, 2,["",0], 0,
@@ -512,7 +512,7 @@ agregarAskStack([UsuarioActivo, ListUser, ListPreg, CorrPreg, CorrRes], FechaP, 
 
 %Recibe una lista de preguntas.
 
-agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LUser,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0]]]|Pregs],CP,NCR]):- !.
+agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0]]]|Pregs],CP,NCR]):- !.
 agregarResPreg([[NUA,CU,RU,REP],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[Res|Resps]]|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [[],LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,[[CR,NUA,Fecha,Cont,Etiq,"",0,0,0],Res|Resps]]|Pregs],CP,NCR]):- !.
 agregarResPreg([UA,LU,[Preg|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [NewUA,LU,[Preg|NewPregs],CP,NCR]):- agregarResPreg([UA,LU,Pregs,CP,CR], IDP, Fecha, Cont, Etiq, NCR, [NewUA,LU,NewPregs,CP,NCR]).
 
@@ -520,7 +520,6 @@ agregarResPreg([UA,LU,[Preg|Pregs],CP,CR], IDP, Fecha, Cont, Etiq, NCR, [NewUA,L
 noExisteUsuarioActivo([]):- !.
 
 %predicado para saber si existe una pregunta:
-
 %Utiliza el operador de corte para confirmar la existencia de una pregunta según su id en la lista de preguntas.
 existePregEnStack([UA,LU,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]|_],CP,CR], IDP):- !.
 existePregEnStack([UA,LU,[_|Preguntas],CP,CR], IDP):-
@@ -547,7 +546,7 @@ siExisteResAccept(Respuestas, IDR, Autor, NRespuestas), AutorRes = Autor, NewPre
 siExistePregDeUserActivoYResAccept([Pregunta|Preguntas], IDP, AP, IDR, AutorRes, Monto, [Pregunta|NewPreguntas]):- 
 siExistePregDeUserActivoYResAccept(Preguntas, IDP, AP, IDR, AutorRes, Monto, NewPreguntas).
 
-actualizarRepUser([[NameUser,Pass,Rep,Ref]|Usuarios], NameUser, Monto, [[NameUser,Pass,NewRep,Ref]|Usuarios]):- NewRep is Rep + Monto.
+actualizarRepUser([[NameUser,CU,R,LR]|Usuarios], NameUser, Monto, [[NameUser,CU,NewRep,LR]|Usuarios]):- NewRep is R + Monto.
 actualizarRepUser([Usuario|Usuarios], NameUser, Monto, [Usuario|NewUsuarios]):- actualizarRepUser(Usuarios, NameUser, Monto, NewUsuarios).
 
 
@@ -583,13 +582,45 @@ allPregUsuario([],_,[]).
 allPregUsuario([[IDP,NameUser,FP,C,LE,EP,NV,VF,VC,R,NR,Res]|Pregs], NameUser, [[IDP,NameUser,FP,C,LE,EP,NV,VF,VC,R,NR,Res]|NewPreg]):- allPregUsuario(Pregs, NameUser, NewPreg).
 allPregUsuario([Preg|Pregs], NameUser, NewPregs):- allPregUsuario(Pregs, NameUser, NewPregs).
 
-
-
 stackToString([[], LU, LP, CP, CR], StackStr):- esStack([[], LU, LP, CP, CR]),
 listUserToString(LU,LUStr), listPregToString(LP,LPStr), atomics_to_string(["StackOverflow:\n\n", "Usuarios:\n",LUStr, "Preguntas:\n",LPStr], StackStr).
 
 stackToString([[NUA,CU,RU,REP], LU, LP, CP, CR], StackStr):- esStack([[NUA,CU,RU,REP], LU, LP, CP, CR]),
 listUserToString([[NUA,CU,RU,REP]],UAStr),allPregUsuario(LP,NUA,NLP), listPregToString(NLP,LPStr),
 atomics_to_string(["\nUsuario Activo:\n",UAStr, "Preguntas usuario:\n",LPStr], StackStr).
+
+
+%Desarrollo predicado vote:
+
+
+getQuestion([UA,LU,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]|_],CP,CR], IDP, [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]):- !.
+getQuestion([UA,LU,[_|Preguntas],CP,CR], IDP, Pregunta):- getQuestion([UA,LU,Preguntas,CP,CR], IDP, Pregunta).
+
+tomarRespuesta([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|_], IDR, [IDR,AR,FP,C,LE,EA,VF,VC,NR]):- !.
+tomarRespuesta([_|Respuestas], IDR, Respuesta):- tomarRespuesta(Respuestas, IDR, Respuesta).
+
+getAnswer([UA,LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,Respuestas]|Pregs],CP,CR], IDP, IDR, Respuesta):- tomarRespuesta(Respuestas, IDR, Respuesta).
+getAnswer([UA,LU,[_|Preguntas],CP,CR], IDP, IDR, Respuesta):- getAnswer([UA,LU,Preguntas,CP,CR], IDP, IDR, Respuesta).
+
+
+
+vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], true, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
+NVF is VF + 1, NVC is VC, actualizarRepUser(LU, NUA, 10, NLU).
+
+vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], false, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
+NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
+
+vote([UA,LU,[Preg|Pregs],CP,CR], Pregunta, Booleano, [NewUA,NewLU,[Preg|NewPregs],CP,CR]):- vote([UA,LU,Pregs,CP,CR], Pregunta, Booleano, [NewUA,NewLU,NewPregs,CP,CR]).
+
+
+
+
+
+
+%vote([[NUA,CU,RU,REP], LU, LP, CP, CR], [IDP,NUA,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas], true, Stack2):- 
+
+
+
+
 
 
