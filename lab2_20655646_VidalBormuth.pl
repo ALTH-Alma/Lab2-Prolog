@@ -1051,51 +1051,169 @@ stackToString([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 7
 			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]], 
  			5, 10], ST),write(ST).
-*
+*/
 %_______________________________________
 
+%Desarrollo requerimiento 10: predicado vote.
 
+%________
+%Predicado que permite tomar una pregunta determinada por su id en el stack.
+%Entrada: 
+%[UA,LU,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]|_],CP,CR]: stack,
+%IDP: entero (id de pregunta).
+%[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]: una pregunta. (la pregunta buscada).
 
-%Desarrollo predicado vote:
-
-
-getQuestion([UA,LU,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]|_],CP,CR], IDP, [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]):- !.
+%Si encuentra la pregunta con el id, se entrega y termina el predicao.
+getQuestion([_,_,[[IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]|_],_,_], IDP, [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,Respuestas]):- !.
+%Sino, se avanza en la lista de preguntas del stack.
 getQuestion([UA,LU,[_|Preguntas],CP,CR], IDP, Pregunta):- getQuestion([UA,LU,Preguntas,CP,CR], IDP, Pregunta).
 
+%________
+%Predicado que permite tomar una respuesta de una lista de respuestas segun su id.
+%Entrada: una lista de respuestas, IDR: entero (id de repuesta), y Respuesta: una variable para tomar la respuesta.
+%Meta: una respuestas.
+
+%Si se encontro la respuesta se entrega y se termina el predicado.
 tomarRespuesta([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|_], IDR, [IDR,AR,FP,C,LE,EA,VF,VC,NR]):- !.
+%Sino se vanza en la lista.
 tomarRespuesta([_|Respuestas], IDR, Respuesta):- tomarRespuesta(Respuestas, IDR, Respuesta).
 
-getAnswer([UA,LU,[[IDP,A,F,C,LE,E,NV,VF,VC,REC,NR,Respuestas]|Pregs],CP,CR], IDP, IDR, Respuesta):- tomarRespuesta(Respuestas, IDR, Respuesta).
+%________
+%Predicado que permite tomar una respuesta identificada por su id en un stack.
+%Entrada: una stack, IDP: entero (id pregunta), IDR: entero (id respuesta), Respuesta: variable para tomar la respuesta.
+%Meta: respuesta: 
+
+%Si se encuentra pregunta se entrega.
+getAnswer([_,_,[[IDP,_,_,_,_,_,_,_,_,_,_,Respuestas]|_],_,_], IDP, IDR, Respuesta):- tomarRespuesta(Respuestas, IDR, Respuesta).
+
+%Sino se avanza en la lista de preguntas del stack.
 getAnswer([UA,LU,[_|Preguntas],CP,CR], IDP, IDR, Respuesta):- getAnswer([UA,LU,Preguntas,CP,CR], IDP, IDR, Respuesta).
 
+%________
 
-voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], true, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
-NVF is VF + 1, NVC is VC, actualizarRepUser(LU, AR, 10, NLU).
-voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], false, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
-NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
-voteRes([Res|Resps], LU, Respuesta, Booleano, [Res|NewResps], NLU):- voteRes(Resps, LU, Respuesta, Booleano, NewResps, NewLU).
+%Intento vote respuesta.
+%voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], true, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
+%NVF is VF + 1, NVC is VC, actualizarRepUser(LU, AR, 10, NLU).
+%voteRes([[IDR,AR,FP,C,LE,EA,VF,VC,NR]|Resps], LU, [IDR,AR,FP,C,LE,EA,VF,VC,NR], false, [[IDR,AR,FP,C,LE,EA,NVF,NVC,NR]|Resps], NLU):-
+%NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
+%voteRes([Res|Resps], LU, Respuesta, Booleano, [Res|NewResps], NLU):- voteRes(Resps, LU, Respuesta, Booleano, NewResps, NewLU).
+%vote([[NUA,CU,RU,REP],LU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NLU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,NewResps]|Pregs],CP,CR]):-
+%voteRes(Resps, LU, [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, NewResps, NLU), !.
+%vote():-
+%vote([[NUA,CU,RU,REP],LU,Pregs,CP,CR],[IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NewLU,Pregs,CP,CR]).
 
 
+%Vote pregunta correcto:
+%Predicado que realiza un voto a una pregunta o respuesta segun se entrege como entrada y puede ser voto + true o voto - false, debe haber usuario activo.
+%Entrada: un stack, una respuesta o pregunta, un booleano y una variable para tomar el satck actualizado con el voto.
+%Meta: stack actualizado con voto realizado.
+
+%si se entrego una pregunta y un true, se vota a favor por la pregunta: 
+%Cuando se encuentra la respuesta en la lista de respuestas del stack, se agrega el voto positivo, se actualiza la reputación del autor y se cierra sesión activa.
 vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], true, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
 NVF is VF + 1, NVC is VC, actualizarRepUser(LU, NUA, 10, NLU).
 
+%si se entrego una pregunta y un false, se vota en contra por la pregunta: 
+%Cuando se encuentra la respuesta en la lista de respuestas del stack, se agrega el voto negativo, se actualiza la reputación del autor y se cierra sesión activa.
 vote([[NUA,CU,RU,REP],LU,[[IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], false, [[],NLU,[[IDP,NUA,F,C,LE,E,NV,NVF,NVC,REC,NR,Resps]|Pregs],CP,CR]):- 
 NVC is VC + 1, NVF is VF, actualizarRepUser(LU, NUA, -2, NLU).
 
+
+%Si se entrega respuesta y un booleano, pero aun no se encuentra la respuesta, se avanza en la lista.
 vote([UA,LU,[Preg|Pregs],CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], Booleano, [NewUA,NewLU,[Preg|NewPregs],CP,CR]):- 
 vote([UA,LU,Pregs,CP,CR], [IDP,NUA,F,C,LE,E,NV,VF,VC,REC,NR,Resps], Booleano, [NewUA,NewLU,NewPregs,CP,CR]).
 
 
-vote([[NUA,CU,RU,REP],LU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,Resps]|Pregs],CP,CR], [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NLU,[[IDP,AP,F,C,LE,E,NV,VF,VC,REC,NR,NewResps]|Pregs],CP,CR]):-
-voteRes(Resps, LU, [IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, NewResps, NLU), !.
+/*
+%Ejemplo: agrega voto.
+login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
+ 			]]], 
+ 			5, 10], "Ana", "A1234",SF),getQuestion(SF,1,P),vote(SF,P,true,F).
 
-vote():-
-vote([[NUA,CU,RU,REP],LU,Pregs,CP,CR],[IDR,AR,FPR,CR,LER,ER,VFR,VCR,NRR], Booleano, [[],NewLU,Pregs,CP,CR]).
+%agrega voto:
 
+login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
+ 			]]], 
+ 			5, 10], "Maria", "Maria1999",SF),getQuestion(SF,0,P),vote(SF,P,false,F).
 
-%Arreglar acept, vote , constructires.
+%No existe pregunta, no agrega:
+login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
+ 			]]], 
+ 			5, 10], "Maria", "Maria1999",SF),getQuestion(SF,10,P),vote(SF,P,false,F).
 
-
+*/
 
 
 
