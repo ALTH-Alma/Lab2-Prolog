@@ -88,7 +88,7 @@ esListaUsuarios([H|T]), agregarUsuario(T, Usuario, NEWT). %avanza en la lista.
 existeUsuario([[NOMBRE,_,_,_]|_], NOMBRE):- !. %si encuentra al usuario entrega true
 existeUsuario([_|T], NOMBRE):- existeUsuario(T, NOMBRE). %avanza en la lista.
 
-
+%_______
 %Predicado extra usuarios:
 %Permite transformar una lista de usuarios en un solo string ordenado.
 %Entrada: 
@@ -104,6 +104,23 @@ listUserToString([[NameUser, Pass, Reputacion, Referencias]|Usuarios], StringFin
 listToString(Referencias,Ref),
 atomics_to_string(["Nombre Usuario: ",NameUser, "\nClave: ",Pass, "\nReputacion: ",Reputacion, "\nReferencias: ",Ref, "\n\n"], Str),
 listUserToString(Usuarios, StringFinal2), string_concat(Str, StringFinal2, StringFinal). 
+
+%______
+%Predicado extra, modificador.
+%Predicado que actualiza la reputacion de un usuario. Encuentra a usuario segun su nombre.
+%Entrada:
+%[Usuario|Usuarios]: lista de usuarios.
+%NameUser: string nombre de usuario.
+%Monto: entero (monto que se quiere agregar a la reputación del usuario).
+%[Usuario|NewUsuarios]: variable para la nueva lista de usuarios actualizada.
+%Meta: una nueva lista  de usuarios con una recompensa modificada.
+
+%Si se encuntra usuario, se modifica su reputacion y se detiene el predicado. 
+actualizarRepUser([[NameUser,CU,R,LR]|Usuarios], NameUser, Monto, [[NameUser,CU,NewRep,LR]|Usuarios]):- NewRep is R + Monto.
+
+%Sino se avanza en la lista.
+actualizarRepUser([Usuario|Usuarios], NameUser, Monto, [Usuario|NewUsuarios]):- actualizarRepUser(Usuarios, NameUser, Monto, NewUsuarios).
+
 
 %_________________________________________
 
@@ -126,8 +143,8 @@ RESPUESTA= [IDR, AR, FP, C, LE, EA, VF, VC, NR].
 %Entrada: una lista de elementos que sirve como postulante a ser una respuesta, la lista posee las mismas entradas de Capa constructor.
 %Meta: un booleano, un true si la lista es una respuesta y un false sino.
 
-respuesta([]).
-respuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]):-
+esRespuesta([]).
+esRespuesta([IDR, AR, FP, C, LE, EA, VF, VC, NR]):-
 integer(IDR), string(AR), esFecha(FP), string(C), esListaString(LE), string(EA), integer(VF), integer(VC), integer(NR),
 IDR > -1, VF > -1, VC > -1, NR > -1 .
 %_________________________________________
@@ -138,7 +155,7 @@ IDR > -1, VF > -1, VC > -1, NR > -1 .
 %Entrada: [H|T]: una lista con elementos, sirve como postulante para una lista de respuestas.
 %Meta: un booleano, un true si la lista corresponde a una lista de respuestas y un false sino.
 esListaRespuestas([]).
-esListaRespuestas([H|T]):- respuesta(H),esListaRespuestas(T).
+esListaRespuestas([H|T]):- esRespuesta(H),esListaRespuestas(T).
 
 %Capa constructor: se puede hacer un alcance de nombre con un predicado modificador, pues se puede empezar con una lista vacia de respuestas y luego ir agregando 
 %las respuestas que se deseen: 
@@ -146,11 +163,11 @@ esListaRespuestas([H|T]):- respuesta(H),esListaRespuestas(T).
 %[H|NEWT]: una variable para asignar la nueva lista de respuestas con la respuesta incluida.
 %Meta: una nueva lista de respuestas.
 
-agregarRespuesta([], Respuesta, [Respuesta]):- respuesta(Respuesta). %caso base, se llega al final de la lista y se agrega usuario.
+agregarRespuesta([], Respuesta, [Respuesta]):- esRespuesta(Respuesta). %caso base, se llega al final de la lista y se agrega usuario.
 agregarRespuesta([H|T], Respuesta, [H|NEWT]):- 
 esListaRespuestas([H|T]), agregarRespuesta(T, Respuesta, NEWT). %avanza en la lista
 
-
+%______
 %Predicado extra de respuesta:
 %Transforma una lista de respuestas en un string oredenado.
 %Entrada: 
@@ -162,10 +179,26 @@ esListaRespuestas([H|T]), agregarRespuesta(T, Respuesta, NEWT). %avanza en la li
 listResToString([], "\n\n").
 
 %sino recorre la lista y va transformando respuestas en string y uniendolas con las otras respuestas con el predicado string_concat y atomics_to_string.
-listResToString([[IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]|Respuestas], StringRes):- respuesta([IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]),
+listResToString([[IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]|Respuestas], StringRes):- esRespuesta([IDR, AR, [D,M,A], C, Etiq, EA, VF, VC, NR]),
 listToString(Etiq,E), atomics_to_string([D,"/",M,"/",A],FP),
 atomics_to_string(["ID Respuesta: ",IDR, "\nAutor: ",AR, "\nFecha: ",FP , "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EA, "\nVotos a favor: ",VF, "\nVotos en contra: ",VC, "\nReportes: ",NR, "\n\n"], Str),
 listResToString(Respuestas, StringRes2), string_concat(Str, StringRes2, StringRes).
+%_______
+
+%Predicado extra, modificador de lista.
+%Predicado que recorre una lista de respuestas buscando una respuesta segun su id.
+%Entrada: 
+%[Respuesta|Respuestas]: una lista de respuestas.
+%IDR: entero (identificador de la respuesta).
+%AutorRes: variable que guardara un string (nombre autor respuesta).
+%[Respuesta|NewRespuestas]: una variable para obtener la nueva lista de respuestas. 
+%Meta: un booleano, una lista de respuestas actualizada y un string (nombre del autor de la respuesta).
+
+%Si se encontro la respuesta segun su id, se modifica estado de pregunta, se obtiene el nombre del autor, el predicado se detiene. 
+siExisteResAccept([[IDR, AutorRes, FP, C, LE, _, VF, VC, NR]|Respuestas], IDR, AutorRes, [[IDR, AutorRes, FP, C, LE, "Aceptada", VF, VC, NR]|Respuestas]):- !.
+
+%Sino se avanza en la lista de respuestas.
+siExisteResAccept([Respuesta|Respuestas], IDR, AutorRes, [Respuesta|NewRespuestas]):- siExisteResAccept(Respuestas, IDR, AutorRes, NewRespuestas).
 
 %_________________________________________
 
@@ -190,23 +223,10 @@ PREGUNTA= [IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS].
 %Entrada: una lista de elementos que sirve como postulante a ser una pregunta, la lista posee las mismas entradas de Capa constructor.
 %Meta: un booleano, un true si la lista es una pregunta y un false sino.
 
-pregunta([]).
-pregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]):-
+esPregunta([]).
+esPregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]):-
 integer(IDP),string(AP),esFecha(FP),string(C),esListaString(LE),string(EP),integer(NV),integer(VF),integer(VC),esRecompensa(REC),integer(NR),esListaRespuestas(RESPUESTAS),
 IDP > -1, NV > -1, VF > -1, VC > -1, NR > -1 .
-
-
-
-%Capa selector:
-%Entrada: todos los predicados de la capa selector reciben como entrada una pregunta.
-
-%Salida: un entero, ID de la pregunta.
-getIdPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],IDP):- pregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-%Salida: una lista de respuestas, respuestas de la pregunta.
-getRespuestasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],RESPUESTAS):- pregunta([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS]).
-
-
 
 %_________________________________________
 %TDA lista de preguntas: representa una lista de preguntas en el stack.
@@ -216,7 +236,7 @@ getRespuestasPreg([IDP,AP,FP,C,LE,EP,NV,VF,VC,REC,NR,RESPUESTAS],RESPUESTAS):- p
 %Entrada: [H|T]: una lista con elementos, sirve como postulante para una lista de preguntas.
 %Meta: un booleano, un true si la lista corresponde a una lista de preguntas y un false sino.
 esListaPreguntas([]).
-esListaPreguntas([H|T]):- pregunta(H),esListaPreguntas(T).
+esListaPreguntas([H|T]):- esPregunta(H),esListaPreguntas(T).
 %______
 %Capa constructor:se puede hacer un alcance de nombre con un predicado modificador, pues se puede empezar con una lista vacia de preguntas y luego ir agregando 
 %las preguntas que se deseen: 
@@ -224,7 +244,7 @@ esListaPreguntas([H|T]):- pregunta(H),esListaPreguntas(T).
 %[H|NEWT]: una variable para asignar la nueva lista de preguntas.
 %Meta: una nueva lista de preguntas.
 
-agregarPregunta([], Pregunta, [Pregunta]):- pregunta(Pregunta). %caso base, se llega al final de la lista y se agrega usuario.
+agregarPregunta([], Pregunta, [Pregunta]):- esPregunta(Pregunta). %caso base, se llega al final de la lista y se agrega usuario.
 agregarPregunta([H|T], Pregunta,  [H|NEWT]):- 
 esListaPreguntas([H|T]), agregarPregunta(T, Pregunta, NEWT).  %se avanza en la lista.
 
@@ -234,7 +254,7 @@ esListaPreguntas([H|T]), agregarPregunta(T, Pregunta, NEWT).  %se avanza en la l
 %Entrada: 
 %[[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas]: lista de preguntas, (IDP: id respuesta entero, AP: autor pregunta string,
 %[D,M,A]: fecha(dia,mes,año), C: contenido string, LE: etiquetas lista string, EP: estado string, NV: visualizaciones entero, VF: votos + entero, VC: votos - entero, 
-[Ofertor, Monto] recompensa (string, entero), NR: reportes entero, Respuestas: lista de respuestas).
+%[Ofertor, Monto] recompensa (string, entero), NR: reportes entero, Respuestas: lista de respuestas).
 %StringPreg: variable para asignar string resultante.
 
 %Si llega al final para.
@@ -242,7 +262,7 @@ listPregToString([], "\n").
 
 %sino recorre la lista y va transformando preguntas en string y uniendolas con las otras preguntas con el predicado string_concat y atomics_to_string.
 
-listPregToString([[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas],StringPreg):- pregunta([IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]),
+listPregToString([[IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]|Preguntas],StringPreg):- esPregunta([IDP,AP,[D,M,A],C,LE,EP,NV,VF,VC,[Ofertor,Monto],NR,Respuestas]),
 listToString(LE,E), atomics_to_string([D,"/",M,"/",A],FP), atomics_to_string([Ofertor, " ofrece ", Monto, " puntos "],R), listResToString(Respuestas,Res),
 atomics_to_string(["ID Pregunta: ",IDP, "\nAutor: ",AP, "\nFecha: ",FP, "\nContenido: ",C, "\nEtiquetas: ",E, "\nEstado: ",EP, "\nVisualizaciones: ",NV,"\nVotos a favor: ",VF, "\nVotos en contra: ",VC,"\nRecompensa: ",R, "\nReportes: ",NR,"\nRespuestas:\n\n",Res,"\n\n"], Str),
 listPregToString(Preguntas, StringPreg2), string_concat(Str, StringPreg2, StringPreg).
@@ -264,6 +284,33 @@ allPregUsuario([[IDP,NameUser,FP,C,LE,EP,NV,VF,VC,R,NR,Res]|Pregs], NameUser, [[
 
 %Si no se recorre la lista
 allPregUsuario([_|Pregs], NameUser, NewPregs):- allPregUsuario(Pregs, NameUser, NewPregs).
+
+
+%______
+%Predicado estra 3, modificador.
+%Predicado que busca una pregunta segun su id en la listas de preguntas en un stack, y cuando la encuentra verifica si se puede aceptar una de sus respuestas, identificada con 
+%su id con el predicado siExisteResAccept, si esto pasa acepta la respuesta y obtiene el nombre de su autor, luego obtiene el monto de la recompensa si es que existe y modifica la
+%pregunta quitando la recompensa, de esta forma se actualizan las respuestas y preguntas, y se obtiene monto de recompensa y autor de la respuesta.
+%Entrada: 
+%[Pregunta|Preguntas]: lista de preguntas.
+%IDP: entero (identificador de la respuesta).
+%AP: string (autor de la pregunta).
+%IDR: entero (id de la respuesta).
+%AutorRes: variable que guardara el nombre del autor de la respuesta.
+%Monto: variable que guardara el monto de la recompensa si no hay recom es 0.
+%[Pregunta|NewPreguntas]: una variable para una nueva lista de preguntas.
+%Metas: una nueva lista de preguntas actualizada cuando se acepta una respuesta, un string nombre autor de la respuesta y un entero monto de la recompensa.
+%Este predicado verifica además que el autor de la pregunta sea el usuario activo.
+
+%Si se encontro la respuesta del id y autor correspondiente, se usa el predicado siExisteResAccept, se actualiza pregunta y se obtienen monto recompensa y autor respuesta. Se detiene con
+%el operador de corte.
+siExistePregDeUserActivoYResAccept([[IDP,AP,FP,C,LE,EP,NV,VF,VC,[_,Monto],NR,Respuestas]|Preguntas], IDP, AP, IDR, AutorRes, Monto, [[IDP,AP,FP,C,LE,EP,NV,VF,VC,["",0],NR,NRespuestas]|Preguntas]):-
+siExisteResAccept(Respuestas, IDR, AutorRes, NRespuestas),  !.
+
+%Si no se avanza en la lista. 
+siExistePregDeUserActivoYResAccept([Pregunta|Preguntas], IDP, AP, IDR, AutorRes, Monto, [Pregunta|NewPreguntas]):- 
+siExistePregDeUserActivoYResAccept(Preguntas, IDP, AP, IDR, AutorRes, Monto, NewPreguntas).
+
 
 %_________________________________________
 
@@ -382,7 +429,6 @@ usuario(["Ana","A1234", 70, ["java","python"]]).
 usuario(["Juan","juan2000", 20, ["python","c++"]]).
 usuario(["Pedro", "P340", 90,  ["java","c#"]]).
 
-
 pregunta([0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
  			[
  			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
@@ -419,7 +465,6 @@ respuesta([7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendie
 respuesta([8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]).
 respuesta([9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]).
 
-
 stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
 			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
@@ -447,7 +492,6 @@ stack([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]], 
  			5, 10]).
-
 
 stack([[],[["Paola", "P1998", 53, ["Racket","c++"]],["Sam", "S123", 65, ["C#","python"]],["Pablo", "PO2001", 21, ["python","c"]],["Teo", "T342", 90, ["python","java"]]], 
 			[
@@ -494,6 +538,7 @@ register([UA,LU,LP,CP,CR], NewUserName, PassUser, Stack2):-
 esStack([UA,LU,LP,CP,CR]), not(existeUsuario(LU,NewUserName)),agregarUserStack([UA,LU,LP,CP,CR], NewUserName, PassUser, Stack2).
 
 %Ejemplos:
+/*
 % 1 Se registra correctamente:
 register([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
@@ -555,6 +600,8 @@ register([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["
 % 3 se registra un usuario en un stack nuevo:
 register([[],[],[],0,0], "Antonia", "ANTO123",SF).
 
+*/
+
 %_________________________________________
 
 %Desarrollo requerimiento 4: predicado login.
@@ -573,6 +620,7 @@ esStack(Stack), string(UserName), string(Pass),
 autentificarUserEnStack(Stack, UserName, Pass, Stack2).
 
 %Ejemplos:
+/*
 % 1 ingresa correctamente a usuario activo.
 login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
@@ -634,7 +682,7 @@ login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 
 %No inicia sesión. No existe usuario.
 login([[],[],[],0,0],"Ana", "A123",SF).
-
+*/
 %_________________________________________
 
 %Desarrollo requerimiento 5: predicado ask.
@@ -654,6 +702,7 @@ esStack(Stack), esFecha(FechaP), string(ContP), esListaString(Etiq),
 agregarAskStack(Stack, FechaP, ContP, Etiq, Stack2).
 
 %Ejemplos:
+/*
 % 1 realiza pregunta.
 login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
@@ -701,7 +750,7 @@ ask([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java"
 % 3 realiza pregunta.
 ask([["Pedro", "P340", 90, ["java","c#"]],[["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]],[],0,0],
 	 [02,10,2010], "esto funciona?", ["prueba","ask"], S).
-
+*/
 
 %_________________________________________
 
@@ -725,7 +774,7 @@ existePregEnStack([UA,LU,LP,CP,CR],IDP), agregarResPreg([UA,LU,LP,CP,CR], IDP, F
 
 
 %Ejemplos answer:
-
+/*
 % 1 Realiza pregunta:
 login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
@@ -740,7 +789,7 @@ login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
 			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
  			]]], 
- 			5, 10], "Ana", "A1234",SF),answer(SF, [2,2,2020], 2, "CONTENIDO RESPUESTA", ["prueba"], S2).
+ 			3, 9], "Ana", "A1234",SF),answer(SF, [2,2,2020], 2, "CONTENIDO RESPUESTA", ["prueba"], S2).
 
 
 % 2 No realiza pregunta: No existe usuario activo:
@@ -781,25 +830,21 @@ login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
  			]]], 
  			3, 5], "Ana", "A1234",SF),answer(SF, [2,2,2020], 4, "CONTENIDO RESPUESTA", ["prueba"], S2).
 
-
+*/
 %_________________________________________
 
-%8Desarrollo requerimiento 8: predicado accept.
+%Desarrollo requerimiento 8: predicado accept.
+%Predicado que le permita a un usuario activo en el stack, aceptar una respuesta a una de susu preguntas.
+%Entrada: 
+%[[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]: stack con usuario activo.
+%IdPreg: entero( id de pregunta).
+%IdRes: entero (id de respuesta).
+%Stack2: variable para unificar o comparar stack actualizado.
+%Meta: stack con respuesta aceptada o booleano (false si no se puede aceptar(no existe usuario activo o pregunta o respuesta, o datos incorrectos, o respuesta no perteneciente a usuario activo)
+%, true si el Stack2 = stack actualizado, y stack actualizado y true, en caso de realizar la actualización correctamente).
 
-
-
-siExisteResAccept([[IDR, AutorRes, FP, C, LE, _, VF, VC, NR]|Respuestas], IDR, AutorRes, [[IDR, AutorRes, FP, C, LE, "Aceptada", VF, VC, NR]|Respuestas]):- !.
-siExisteResAccept([Respuesta|Respuestas], IDR, AutorRes, [Respuesta|NewRespuestas]):- siExisteResAccept(Respuestas, IDR, AutorRes, NewRespuestas).
-
-siExistePregDeUserActivoYResAccept([[IDP,AP,FP,C,LE,EP,NV,VF,VC,[_,Monto],NR,Respuestas]|Preguntas], IDP, AP, IDR, AutorRes, Monto, NewPreg):-
-siExisteResAccept(Respuestas, IDR, Autor, NRespuestas), AutorRes = Autor, NewPreg = [[IDP,AP,FP,C,LE,EP,NV,VF,VC,["",0],NR,NRespuestas]|Preguntas], !.
-
-siExistePregDeUserActivoYResAccept([Pregunta|Preguntas], IDP, AP, IDR, AutorRes, Monto, [Pregunta|NewPreguntas]):- 
-siExistePregDeUserActivoYResAccept(Preguntas, IDP, AP, IDR, AutorRes, Monto, NewPreguntas).
-
-actualizarRepUser([[NameUser,CU,R,LR]|Usuarios], NameUser, Monto, [[NameUser,CU,NewRep,LR]|Usuarios]):- NewRep is R + Monto.
-actualizarRepUser([Usuario|Usuarios], NameUser, Monto, [Usuario|NewUsuarios]):- actualizarRepUser(Usuarios, NameUser, Monto, NewUsuarios).
-
+%El predicado verifica los datos de entrada, realiza la actualización con el predicado siExistePregDeUserActivoYResAccept, si este entrega true, se puedo realizar el cambio y se modifican las
+%las reputaciones correspondientes, por ultimo se actualiza stack. Si se entregaba false se acababa.
 
 accept([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes], IdPreg, IdRes, Stack2):-
 esStack([[NomUserActivo,CUA,RUA,REP], ListUser, ListPreg, CorrPreg, CorrRes]), integer(IdPreg), integer(IdRes),
@@ -808,9 +853,8 @@ actualizarRepUser(ListUser, NomUserActivo, 2, ListUser2), actualizarRepUser(List
 Stack2 = [[], ListUser3, NewListPreg, CorrPreg, CorrRes].
 
 %Ejemplos:
-
-% 1 acepta una pregunta: 
-
+/*
+% 1 acepta una respuesta. Entrega true y nuevo stack.
 login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
 			[
 			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
@@ -823,7 +867,7 @@ login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[
 			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
 			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
- 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Aceptada", 36, 3, 0],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Pendiente", 36, 3, 0],
  			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
  			]],
  			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
@@ -837,9 +881,66 @@ login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["jav
 			[
 			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]], 
- 			5, 10], "Ana", "A1234",SF), accept(SF, 0, 2, F).
+ 			5, 10], "Ana", "A1234",SF),accept(SF, 1, 5, F).
 
+% 2 No acepta respuesta: la respuesta no corresponde a  la pregunta con el id. Entrega false.
+login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Pendiente", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
+ 			]]], 
+ 			5, 10], "Ana", "A1234",SF), accept(SF, 0, 5, F).
 
+%No acepta, la respuesta y pregunta exiten y se corresponden pero el autor de la pregunta no es el usuario activo. Entrega false.
+login([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 70, ["java","python"]],["Juan","juan2000", 20, ["python","c++"]],["Pedro", "P340", 90, ["java","c#"]]], 
+			[
+			[0, "Maria", [29, 2, 2020], "¿Por que es una mala practica usar variables globales?", ["Malas practicas","variables"], "Abierta", 30, 10, 5, ["Maria", 10], 1, 
+ 			[
+ 			[2,"Ana", [12, 5, 2020], "Existen varias razones.", ["Problemas", "variables"], "Pendiente", 15, 2, 0],
+ 			[1,"Pedro", [22, 3, 2020], "No es una mala practica.", ["Variables globales"], "Rechazada", 5, 6, 1],
+ 			[0,"Juan", [2, 3, 2020], "Aumenta la complejidad.", ["Variables", "Problemas"], "Pendiente", 20, 3, 0]
+ 			]],
+			[1, "Ana", [29, 10, 2020], "¿Como pongo una imagen de fondo a la ventana creada con PyQT5?", ["python","interfaz-gráfica","imagen"], "Abierta", 50, 5, 2, ["",0], 0,
+			[
+			[3,"Maria", [20, 11, 2020], "Usando Designer.", ["imagen"], "Aceptada", 15, 2, 0],
+			[4, "Juan", [13, 11, 2020], "No se puede hacer.", ["errores"], "Rechazada", 6, 11, 2],
+ 			[5, "Pedro", [10, 11, 2020], "Usando Qt Style Sheet.", ["imagen"], "Pendiente", 36, 3, 0],
+ 			[6, "Ana", [3, 11, 2020], "No lo se.", ["imagen"], "Pendiente", 2, 13, 3]
+ 			]],
+ 			[2, "Pedro", [2, 12, 2020], "¿Como puedo hacer una lista?", ["listas"], "Abierta", 25, 5, 20, ["Pedro",5], 0,
+			[
+			[7,"Juan", [4, 12, 2020], "Con recursión.", ["construccion"], "Pendiente", 2, 3, 0],
+			[8, "Ana", [3, 12, 2020], "Utilizando ciclos.", ["listas", "ciclos"], "Pendiente", 3, 2, 0]
+ 			]],
+ 			[3, "Juan", [3, 12, 2020], "¿Como puedo encontrar permutaciones en C?", ["Permutaciones","C"], "Abierta", 10, 5, 2, ["",0], 0, 
+ 			[]],
+ 			[4, "Maria", [4, 12, 2020], "¿Como puedo hacer que en prolog se vea el texto completo?", ["Prolog","texto"], "Abierta", 30, 12, 2, ["",0], 0,
+			[
+			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
+ 			]]], 
+ 			5, 10], "Maria", "Maria1999",SF), accept(SF, 1, 5, F).
+*/
 %_________________________________________
 
 %Desarrollo requerimiento 9: predicado stackToString.
@@ -863,6 +964,7 @@ listUserToString([[NUA,CU,RU,REP]],UAStr),allPregUsuario(LP,NUA,NLP), listPregTo
 atomics_to_string(["\nUsuario Activo:\n",UAStr, "Preguntas usuario:\n",LPStr], StackStr).
 
 %Ejemplos:
+/*
 %Muestra todo el stack como un string.
 stackToString([[],[["Paola", "P1998", 53, ["Racket","c++"]],["Sam", "S123", 65, ["C#","python"]],["Pablo", "PO2001", 21, ["python","c"]],["Teo", "T342", 90, ["python","java"]]], 
 			[
@@ -949,7 +1051,7 @@ stackToString([[],[["Maria", "Maria1999", 50, ["Racket","c#"]],["Ana","A1234", 7
 			[9,"Ana", [5, 12, 2020], "Con el comando set_prolog_flag(answer_write_options,[max_depth(0)]).", ["texto prolog"], "Aceptada", 20, 0, 0]
  			]]], 
  			5, 10], ST),write(ST).
-
+*
 %_______________________________________
 
 
